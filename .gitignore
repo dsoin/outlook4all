@@ -1,0 +1,6 @@
+.gradle
+build/
+.git
+.idea
+*.properties
+*.pst

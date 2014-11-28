@@ -1,0 +1,55 @@
+body {
+	font-family: proxima-nova,"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+span {
+    display:block;
+padding-left: 10px;
+  padding-right: 10px;
+    word-wrap:break-word;
+}
+.popover {
+  margin-top: 100px;
+  min-height: 300px;
+  width: 400px;
+  z-index: 100;
+}
+
+.clickableRow {
+    cursor: pointer;
+}
+
+  html {
+    position: relative;
+    min-height: 100%;
+  }
+  body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+  }
+  .footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 40px;
+
+  }
+
+em {
+
+  background-color: yellow;
+}
+
+  /* Custom page CSS
+  -------------------------------------------------- */
+  /* Not required for template or sticky footer method. */
+
+  .container {
+    width: auto;
+    max-width: 380px;
+    padding: 0 15px;
+  }
+  .container .text-muted {
+    margin: 10px 0;
+  }

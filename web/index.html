@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>
+<html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <!--[if lt IE 9]>
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <![endif]-->
+
+    <script src="/js/angular.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/ui-bootstrap-tpls-0.11.2.min.js"></script>
+    <script src="/js/outlook4all.js"></script>
+
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body ng-app="Outlook4All">
+<div ng-controller="LandingPageController as main" class="container-fluid">
+
+    <div ng-include src="'form_top.html'"></div>
+
+<div class="row">
+    <div class="col-md-6" style="font-size:15px;">
+        <span class="label label-info">Most recent </span>
+
+
+        <table class="table-condensed table-hover">
+            <tbody data-ng-repeat="entry in recent" class="list-group">
+            <tr><td><span class="badge">{{entry.long}}</span>&nbsp;
+                <a target="_self" href="/conversation.html?q={{entry.string}}">{{entry.string}}</a>
+            </td>
+
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+        <div class="col-md-3" style="font-size:12px;">
+            <span class="label label-info">Most discussed (ever)</span>
+
+
+            <table class="table-condensed table-hover">
+            <tbody data-ng-repeat="entry in topDiscussedEver" class="list-group">
+                <tr><td><span class="badge">{{entry.long}}</span>&nbsp;<a target="_self" href="/conversation.html?q={{entry.string}}">{{entry.string}}</a></td>
+
+                </tr>
+            </tbody>
+            </table>
+        </div>
+
+    <div class="col-md-3" style="font-size:12px;">
+        <span class="label-info label">Top Posters (ever)</span>
+        <table class="table-condensed table-hover">
+            <tbody data-ng-repeat="entry in topPostersEver" class="list-group">
+            <tr><td><span class="badge">{{entry.long}}</span>&nbsp;{{entry.string}}</td>
+
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted">Any questions/ideas mail to <a href="mailto:Dmitrii.Soin@hp.com">Dmitrii Soin</a></p>
+    </div>
+</footer>
+
+
+</body>
+
+</html>

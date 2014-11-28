@@ -1,0 +1,5 @@
+systemProp.http.proxyHost=web-proxy.atl.hp.com
+systemProp.http.proxyPort=8080
+systemProp.https.proxyHost=web-proxy.atl.hp.com
+systemProp.https.proxyPort=8080
+
