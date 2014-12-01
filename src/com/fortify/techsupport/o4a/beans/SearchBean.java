@@ -1,7 +1,5 @@
 package com.fortify.techsupport.o4a.beans;
 
-import java.util.Date;
-
 /**
  * Created by Dmitrii Soin on 27/11/14.
  */
@@ -43,5 +41,21 @@ public class SearchBean {
 
     public void setHighlite(String highlite) {
         this.highlite = highlite;
+    }
+
+    public String getSubmit_time() {
+        return submit_time;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public String getBody_html() {
+        return body_html;
     }
 }

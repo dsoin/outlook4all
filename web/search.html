@@ -41,6 +41,7 @@
             <span class="badge">{{entry.submit_time| date:'medium'}}</span>
             <span class="label " style="font-size:15px;">
                 <a target="_self" href="/conversation.html?q={{entry.topic}}">{{entry.topic}}</a></span>
+
             <span ng-bind-html="entry.body | sanitize"></span>
         </div>
         </div>

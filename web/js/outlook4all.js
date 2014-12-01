@@ -18,9 +18,10 @@ $http.get('/stats').
  success(function(data, status, headers, config) {
 
 
-      $scope.topDiscussedEver = data["com.fortify.techsupport.o4a.beans.StatsBean"]["topDiscussedEver"][0].entry;
-      $scope.topPostersEver = data["com.fortify.techsupport.o4a.beans.StatsBean"]["topPostersEver"][0].entry;
-      $scope.recent = data["com.fortify.techsupport.o4a.beans.StatsBean"]["recent"][0].entry;
+
+      $scope.topDiscussedEver = data["topDiscussedEver"];
+      $scope.topPostersEver = data["topPostersEver"];
+      $scope.recent = data["recent"];
 
 
 
@@ -49,7 +50,7 @@ $http.get('/getconv/'+$location.search().q).
  success(function(data, status, headers, config) {
 
     $scope.eventDetailsCollapseMap=[];
-      $scope.conversations = data.list[0]["com.fortify.techsupport.o4a.beans.SearchBean"];
+      $scope.conversations = data;
 
 
 
@@ -111,7 +112,7 @@ $scope.search = function (query) {
           $scope.took = data["com.fortify.techsupport.o4a.beans.SearchResultsBean"]["took"];
           $scope.hits = data["com.fortify.techsupport.o4a.beans.SearchResultsBean"]["totalHits"];
           $scope.searchRes = data["com.fortify.techsupport.o4a.beans.SearchResultsBean"]["searchResults"][0]["com.fortify.techsupport.o4a.beans.SearchBean"];
-     //   $window.scrollTo(0,0);
+          $window.scrollTo(0,0);
 
 
 

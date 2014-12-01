@@ -1,11 +1,8 @@
 package com.fortify.techsupport.o4a;
 
-import com.fortify.techsupport.o4a.beans.StatsBean;
 import com.fortify.techsupport.o4a.resources.ConversationResource;
 import com.fortify.techsupport.o4a.resources.SearchResource;
 import com.fortify.techsupport.o4a.resources.StatsResource;
-import com.pff.PSTException;
-import com.pff.PSTFile;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.restlet.Application;
 import org.restlet.Component;
@@ -15,12 +12,9 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -52,10 +46,10 @@ public class Outlook4All {
         };
         component.getDefaultHost().attach(staticapp);
 
-        component.getDefaultHost().attach("/search/{q}", createApp( SearchResource.class, staticapp.getContext()));
-        component.getDefaultHost().attach("/search/{q}/{from}", createApp( SearchResource.class, staticapp.getContext()));
-        component.getDefaultHost().attach("/stats", createApp( StatsResource.class, staticapp.getContext()));
-        component.getDefaultHost().attach("/getconv/{q}", createApp( ConversationResource.class, staticapp.getContext()));
+        component.getDefaultHost().attach("/search/{q}", createApp(SearchResource.class, staticapp.getContext()));
+        component.getDefaultHost().attach("/search/{q}/{from}", createApp(SearchResource.class, staticapp.getContext()));
+        component.getDefaultHost().attach("/stats", createApp(StatsResource.class, staticapp.getContext()));
+        component.getDefaultHost().attach("/getconv/{q}", createApp(ConversationResource.class, staticapp.getContext()));
 
         component.start();
     }

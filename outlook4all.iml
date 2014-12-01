@@ -16,29 +16,13 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="Gradle: org.restlet.jee:org.restlet:2.2.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.restlet.jee:org.restlet.ext.servlet:2.2.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.restlet.jse:org.restlet:2.2.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.restlet.jse:org.restlet.ext.xstream:2.2.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.restlet.jse:org.restlet.ext.json:2.2.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.slf4j:slf4j-simple:1.7.7" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.httpcomponents:httpclient:4.3.3" level="project" />
     <orderEntry type="library" exported="" name="Gradle: commons-primitives:commons-primitives:1.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.codehaus.jettison:jettison:1.3.5" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: net.sf.json-lib:json-lib:2.4" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.pff:java-libpst:0.7" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.elasticsearch:elasticsearch:1.4.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.thoughtworks.xstream:xstream:1.4.7" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.restlet.jse:org.restlet.lib.org.restlet.lib.org.json:2.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.slf4j:slf4j-api:1.7.7" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.httpcomponents:httpcore:4.3.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: commons-logging:commons-logging:1.1.3" level="project" />
     <orderEntry type="library" exported="" name="Gradle: commons-codec:commons-codec:1.6" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: stax:stax-api:1.0.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: commons-beanutils:commons-beanutils:1.8.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: commons-collections:commons-collections:3.2.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: commons-lang:commons-lang:2.5" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: net.sf.ezmorph:ezmorph:1.0.6" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.lucene:lucene-core:4.10.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.lucene:lucene-analyzers-common:4.10.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.lucene:lucene-queries:4.10.2" level="project" />
@@ -54,8 +38,20 @@
     <orderEntry type="library" exported="" name="Gradle: org.antlr:antlr-runtime:3.5" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.ow2.asm:asm:4.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.ow2.asm:asm-commons:4.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: xmlpull:xmlpull:1.1.3.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: xpp3:xpp3_min:1.1.4c" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.spatial4j:spatial4j:0.4.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.restlet.jee:org.restlet:2.2.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.restlet.jee:org.restlet.ext.jackson:2.2.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.2.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.2.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.2.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.2.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-smile:2.2.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.2.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.2.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.2.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.codehaus.woodstox:woodstox-core-asl:4.2.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.codehaus.woodstox:stax2-api:3.1.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.yaml:snakeyaml:1.13" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.xml.stream:stax-api:1.0-2" level="project" />
   </component>
 </module>

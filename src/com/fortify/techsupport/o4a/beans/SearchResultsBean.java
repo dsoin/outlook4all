@@ -21,4 +21,16 @@ public class SearchResultsBean {
     public void setTotalHits(long totalHits) {
         this.totalHits = totalHits;
     }
+
+    public long getTotalHits() {
+        return totalHits;
+    }
+
+    public long getTook() {
+        return took;
+    }
+
+    public List<SearchBean> getSearchResults() {
+        return searchResults;
+    }
 }

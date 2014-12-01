@@ -40,8 +40,8 @@
 
         <table class="table-condensed table-hover">
             <tbody data-ng-repeat="entry in recent" class="list-group">
-            <tr><td><span class="badge">{{entry.long}}</span>&nbsp;
-                <a target="_self" href="/conversation.html?q={{entry.string}}">{{entry.string}}</a>
+            <tr><td><span class="badge">{{entry.value}}</span>&nbsp;
+                <a target="_self" href="/conversation.html?q={{entry.text}}">{{entry.text}}</a>
             </td>
 
             </tr>
@@ -55,8 +55,8 @@
 
 
             <table class="table-condensed table-hover">
-            <tbody data-ng-repeat="entry in topDiscussedEver" class="list-group">
-                <tr><td><span class="badge">{{entry.long}}</span>&nbsp;<a target="_self" href="/conversation.html?q={{entry.string}}">{{entry.string}}</a></td>
+            <tbody data-ng-repeat="entry in topDiscussedEver " class="list-group">
+                <tr><td><span class="badge">{{entry.value}}</span>&nbsp;<a target="_self" href="/conversation.html?q={{entry.text}}">{{entry.text}}</a></td>
 
                 </tr>
             </tbody>
@@ -67,7 +67,7 @@
         <span class="label-info label">Top Posters (ever)</span>
         <table class="table-condensed table-hover">
             <tbody data-ng-repeat="entry in topPostersEver" class="list-group">
-            <tr><td><span class="badge">{{entry.long}}</span>&nbsp;{{entry.string}}</td>
+            <tr><td><span class="badge">{{entry.value}}</span>&nbsp;{{entry.text}}</td>
 
             </tr>
             </tbody>
