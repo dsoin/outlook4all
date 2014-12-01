@@ -109,9 +109,9 @@ $scope.search = function (query) {
     $http.get('/search/'+$scope.query+'/'+this.fromPage*10).
      success(function(data, status, headers, config) {
 
-          $scope.took = data["com.fortify.techsupport.o4a.beans.SearchResultsBean"]["took"];
-          $scope.hits = data["com.fortify.techsupport.o4a.beans.SearchResultsBean"]["totalHits"];
-          $scope.searchRes = data["com.fortify.techsupport.o4a.beans.SearchResultsBean"]["searchResults"][0]["com.fortify.techsupport.o4a.beans.SearchBean"];
+          $scope.took = data["took"];
+          $scope.hits = data["totalHits"];
+          $scope.searchRes = data["searchResults"];
           $window.scrollTo(0,0);
 
 
