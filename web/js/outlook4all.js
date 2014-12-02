@@ -1,4 +1,4 @@
-var app = angular.module("Outlook4All", ['ui.bootstrap'],function($locationProvider)
+var app = angular.module("Outlook4All", ['ui.bootstrap','angular-loading-bar'],function($locationProvider)
 {
       $locationProvider.html5Mode({
       enabled: true,
