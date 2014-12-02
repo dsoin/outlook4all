@@ -141,3 +141,8 @@ app.filter("sanitize", ['$sce', function($sce) {
     return $sce.trustAsHtml(htmlCode);
   }
 }]);
+
+
+app.filter('escape', function($window) {
+  return $window.encodeURIComponent;
+});

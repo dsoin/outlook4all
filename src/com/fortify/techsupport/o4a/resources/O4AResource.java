@@ -20,7 +20,9 @@ public class O4AResource extends ServerResource {
     protected void doInit() throws ResourceException {
         query = getRequestAttributes().get("q") != null ? (String) getRequestAttributes().get("q") : "";
         try {
-            query = URLDecoder.decode(query, "UTF-8");
+            log.info(query);
+            query = URLDecoder.decode(query.replace("+", "%2B"), "UTF-8");
+            log.info(query);
         } catch (UnsupportedEncodingException e) {
             log.error(e);
         }

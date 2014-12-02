@@ -5,6 +5,7 @@ import com.pff.PSTFile;
 import com.pff.PSTFolder;
 import com.pff.PSTMessage;
 import org.apache.commons.logging.impl.SimpleLog;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
@@ -66,13 +67,13 @@ public class PSTHelper {
             while (email != null) {
 
 //                db.insertItem(email.getConversationTopic(),email.getBody(),email.getBodyHTML(),email.getSenderName(),email.getClientSubmitTime());
-                sendEmail(email);
+                pushEmail(email);
                 email = (PSTMessage) folder.getNextChild();
             }
         }
     }
 
-    private static void sendEmail(PSTMessage email) {
+    private static void pushEmail(PSTMessage email) {
         Map<String, Object> emailJson = new HashMap<>();
         emailJson.put("topic", email.getConversationTopic());
         emailJson.put("body", email.getBody());
@@ -81,6 +82,8 @@ public class PSTHelper {
         emailJson.put("sender", email.getSenderName());
         emailJson.put("sender_email", email.getSenderEmailAddress());
         emailJson.put("sent_to", email.getDisplayTo());
+
+
 
         IndexResponse response = client.prepareIndex("emails", "qq")
                 .setSource(emailJson
@@ -91,10 +94,10 @@ public class PSTHelper {
     }
 
     private static void prepareIndexesAndMappings() throws IOException {
-        Settings settings = ImmutableSettings.settingsBuilder()
-                .put("index.store.type", "memory").build();
+
         try {
 
+            client.admin().indices().delete(new DeleteIndexRequest("emails"));
             client.admin().indices().deleteMapping(new DeleteMappingRequest("emails").types("*")).actionGet();
         } catch (IndexMissingException ex) {
         }

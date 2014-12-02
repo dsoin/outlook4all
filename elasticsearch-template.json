@@ -1,5 +1,5 @@
 {
-  "template" : "*",
+  "template" : "emails",
   "settings" : {
     "index.refresh_interval" : "5s"
   },
@@ -20,14 +20,7 @@
        } ],
        "properties" : {
          "@version": { "type": "string", "index": "not_analyzed" },
-         "geoip"  : {
-           "type" : "object",
-             "dynamic": true,
-             "path": "full",
-             "properties" : {
-               "location" : { "type" : "geo_point" }
-             }
-         }
+         "attachment":{"type":"binary"}
        }
     }
   }

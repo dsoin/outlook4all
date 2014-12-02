@@ -41,7 +41,7 @@
         <table class="table-condensed table-hover">
             <tbody data-ng-repeat="entry in recent" class="list-group">
             <tr><td><span class="badge">{{entry.value}}</span>&nbsp;
-                <a target="_self" href="/conversation.html?q={{entry.text}}">{{entry.text}}</a>
+                <a target="_self" href="/conversation.html?q={{entry.text | escape}}">{{entry.text}}</a>
             </td>
 
             </tr>
@@ -56,7 +56,7 @@
 
             <table class="table-condensed table-hover">
             <tbody data-ng-repeat="entry in topDiscussedEver " class="list-group">
-                <tr><td><span class="badge">{{entry.value}}</span>&nbsp;<a target="_self" href="/conversation.html?q={{entry.text}}">{{entry.text}}</a></td>
+                <tr><td><span class="badge">{{entry.value}}</span>&nbsp;<a target="_self" href="/conversation.html?q={{entry.text | escape}}">{{entry.text}}</a></td>
 
                 </tr>
             </tbody>
