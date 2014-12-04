@@ -95,6 +95,12 @@ $scope.init = function () {
 };
 
 $scope.search = function (query) {
+    $scope.currentPage=1;
+    $scope.pageSearch(query);
+
+};
+
+$scope.pageSearch = function (query) {
 
     if (query != undefined)
         $scope.query=query;
@@ -105,6 +111,8 @@ $scope.search = function (query) {
         else {
         this.fromPage = this.currentPage-1;
         }
+
+
 
     $http.get('/search/'+$scope.query+'/'+this.fromPage*10).
      success(function(data, status, headers, config) {
