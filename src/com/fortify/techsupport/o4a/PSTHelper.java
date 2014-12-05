@@ -1,9 +1,7 @@
 package com.fortify.techsupport.o4a;
 
-import com.pff.PSTException;
-import com.pff.PSTFile;
-import com.pff.PSTFolder;
-import com.pff.PSTMessage;
+import com.pff.*;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingRequest;
@@ -11,13 +9,10 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.Requests;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.indices.IndexMissingException;
 
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -39,7 +34,7 @@ public class PSTHelper {
         Properties prop = new Properties();
         prop.load(new FileReader("o4a.properties"));
         String pstFilename = (String) prop.get("pstfile");
-//        prepareIndexesAndMappings();
+        prepareIndexesAndMappings();
 
 
         PSTFile pstFile = new PSTFile(pstFilename);
@@ -62,18 +57,53 @@ public class PSTHelper {
         // and now the emails for this folder
         int topics = 0;
         if (folder.getContentCount() > 0) {
-            log.info("" + folder.getContentCount());
             PSTMessage email = (PSTMessage) folder.getNextChild();
             while (email != null) {
 
-//                db.insertItem(email.getConversationTopic(),email.getBody(),email.getBodyHTML(),email.getSenderName(),email.getClientSubmitTime());
-                pushEmail(email);
+               String id = pushEmail(email);
+                if (email.hasAttachments()) {
+                    pushAttachments(email, id);
+                    
+                }
                 email = (PSTMessage) folder.getNextChild();
+                //break;
             }
         }
     }
 
-    private static void pushEmail(PSTMessage email) {
+    private static void pushAttachments(PSTMessage email, String id) throws PSTException, IOException {
+        for (int i=0;i<email.getNumberOfAttachments();i++) {
+            PSTAttachment attach = email.getAttachment(i);
+            Map<String, Object> emailJson = new HashMap<>();
+            String filename = attach.getLongFilename().isEmpty()?attach.getFilename():attach.getLongFilename();
+            byte[] encodedAttach = getAttachment(attach);
+            emailJson.put("filename",filename);
+            emailJson.put("email_id",id);
+            emailJson.put("mime",attach.getMimeTag());
+            emailJson.put("size",attach.getAttachSize());
+            emailJson.put("attachment",new String(encodedAttach));
+
+            IndexResponse response = client.prepareIndex("attachments", "ssc")
+                    .setSource(emailJson
+                    )
+                    .execute()
+                    .actionGet();
+
+        }
+    }
+
+    private static byte[] getAttachment(PSTAttachment attach) throws IOException, PSTException {
+        InputStream attachmentStream = attach.getFileInputStream();
+        byte[] buffer = new byte[attach.getAttachSize()];
+        int count = attachmentStream.read(buffer);
+        byte[] endBuffer = new byte[count];
+        System.arraycopy(buffer, 0, endBuffer, 0, count);
+        attachmentStream.close();
+        return Base64.encodeBase64(endBuffer);
+
+    }
+
+    private static String  pushEmail(PSTMessage email) {
         Map<String, Object> emailJson = new HashMap<>();
         emailJson.put("topic", email.getConversationTopic());
         emailJson.put("body", email.getBody());
@@ -85,11 +115,12 @@ public class PSTHelper {
 
 
 
-        IndexResponse response = client.prepareIndex("emails", "qq")
+        IndexResponse response = client.prepareIndex("emails", "ssc")
                 .setSource(emailJson
                 )
                 .execute()
                 .actionGet();
+        return response.getId();
 
     }
 
@@ -99,10 +130,15 @@ public class PSTHelper {
 
             client.admin().indices().delete(new DeleteIndexRequest("emails"));
             client.admin().indices().deleteMapping(new DeleteMappingRequest("emails").types("*")).actionGet();
+            client.admin().indices().deleteMapping(new DeleteMappingRequest("attachments").types("*")).actionGet();
         } catch (IndexMissingException ex) {
         }
-        client.admin().indices().preparePutTemplate("*").
-                setSource(new String(Files.readAllBytes(Paths.get("elasticsearch-template.json")))).
+        client.admin().indices().preparePutTemplate("emails").
+                setSource(new String(Files.readAllBytes(Paths.get("emails-template.json")))).
+
+                execute().actionGet();
+        client.admin().indices().preparePutTemplate("attachments").
+                setSource(new String(Files.readAllBytes(Paths.get("attachments-template.json")))).
 
                 execute().actionGet();
 
