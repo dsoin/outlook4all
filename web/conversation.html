@@ -47,7 +47,13 @@
                     <span class="badge">{{entry.submit_time| date:'medium'}}</span>
                     <span class="label label-info">{{entry.topic}}</span>
                     <span class="label label-default">{{entry.sender}}</span>
+                    <span ng-if="entry.hasAttachment" class="label"><img src="attachment.jpeg" style="max-height:20px; margin-top: 0px;"/></span>
+
                 </td>
+                </tr>
+                <tr data-ng-show="eventDetailsCollapseMap[$index] && entry.hasAttachment">
+                    <td><img src="attachment.jpeg" style="max-height:20px; margin-top: 0px;"/>
+                        <span class="label" data-ng-repeat="attach in entry.attachments"><a target="_new" href="/download/{{attach.id}}">{{attach.filename}} ({{attach.size}}b)</a></span></td>
                 </tr>
                 <tr data-ng-show="eventDetailsCollapseMap[$index]">
                     <td ng-if="entry.body_html!=''" ng-bind-html="entry.body_html | sanitize"></td>

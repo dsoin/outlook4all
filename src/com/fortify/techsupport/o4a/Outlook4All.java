@@ -1,6 +1,7 @@
 package com.fortify.techsupport.o4a;
 
 import com.fortify.techsupport.o4a.resources.ConversationResource;
+import com.fortify.techsupport.o4a.resources.DownloadResource;
 import com.fortify.techsupport.o4a.resources.SearchResource;
 import com.fortify.techsupport.o4a.resources.StatsResource;
 import org.apache.commons.logging.impl.SimpleLog;
@@ -50,6 +51,7 @@ public class Outlook4All {
         component.getDefaultHost().attach("/search/{q}/{from}", createApp(SearchResource.class, staticapp.getContext()));
         component.getDefaultHost().attach("/stats", createApp(StatsResource.class, staticapp.getContext()));
         component.getDefaultHost().attach("/getconv/{q}", createApp(ConversationResource.class, staticapp.getContext()));
+        component.getDefaultHost().attach("/download/{id}", createApp(DownloadResource.class, staticapp.getContext()));
 
         component.start();
     }

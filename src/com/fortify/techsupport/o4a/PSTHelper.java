@@ -63,7 +63,7 @@ public class PSTHelper {
                String id = pushEmail(email);
                 if (email.hasAttachments()) {
                     pushAttachments(email, id);
-                    
+
                 }
                 email = (PSTMessage) folder.getNextChild();
                 //break;
@@ -112,6 +112,8 @@ public class PSTHelper {
         emailJson.put("sender", email.getSenderName());
         emailJson.put("sender_email", email.getSenderEmailAddress());
         emailJson.put("sent_to", email.getDisplayTo());
+        if (email.hasAttachments())
+            emailJson.put("has_attachment",true);
 
 
 
@@ -129,6 +131,7 @@ public class PSTHelper {
         try {
 
             client.admin().indices().delete(new DeleteIndexRequest("emails"));
+            client.admin().indices().delete(new DeleteIndexRequest("attachments"));
             client.admin().indices().deleteMapping(new DeleteMappingRequest("emails").types("*")).actionGet();
             client.admin().indices().deleteMapping(new DeleteMappingRequest("attachments").types("*")).actionGet();
         } catch (IndexMissingException ex) {

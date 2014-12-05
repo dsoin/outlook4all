@@ -1,14 +1,12 @@
 package com.fortify.techsupport.o4a;
 
-import com.fortify.techsupport.o4a.beans.SearchBean;
-import com.fortify.techsupport.o4a.beans.SearchResultsBean;
-import com.fortify.techsupport.o4a.beans.StatItemBean;
-import com.fortify.techsupport.o4a.beans.StatsBean;
+import com.fortify.techsupport.o4a.beans.*;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.Base64;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -20,6 +18,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +63,7 @@ public class ESHelper {
                 setQuery(QueryBuilders.matchPhrasePrefixQuery("topic.raw", topic)).
                 addSort(SortBuilders.fieldSort("submit_time").order(SortOrder.DESC)).setSize(Integer.MAX_VALUE).
                 execute().actionGet();
+
         for (SearchHit hit : response.getHits().getHits()) {
             SearchBean sb = new SearchBean();
             sb.setBody((String) hit.getSource().get("body"));
@@ -71,14 +71,52 @@ public class ESHelper {
             sb.setSender((String) hit.getSource().get("sender"));
             sb.setSubmit_time((String) hit.getSource().get("submit_time"));
             sb.setTopic((String) hit.getSource().get("topic"));
+            if (hit.getSource().get("has_attachment")!=null) {
+                sb.setAttachments(getAttachments(hit.getId()));
+                if (sb.getAttachments().size()>0)
+                    sb.setHasAttachment(true);
+            }
             convs.add(sb);
         }
 
-        //log.info(response);
 
 
         return convs;
 
+    }
+
+    private List<AttachmentBean> getAttachments(String emailID) {
+        List<AttachmentBean> res = new ArrayList<>();
+        SearchResponse response = client.prepareSearch("attachments").
+                setQuery(QueryBuilders.matchQuery("email_id.raw",emailID)).
+                addFields("filename", "size").
+                execute().actionGet();
+        for (SearchHit hit : response.getHits().getHits()) {
+            AttachmentBean ab = new AttachmentBean();
+            ab.setFilename((String) hit.getFields().get("filename").getValue());
+            ab.setId(hit.getId());
+            ab.setSize((Integer) hit.getFields().get("size").getValue());
+            if (!(
+                    (ab.getFilename().endsWith("png") || ab.getFilename().endsWith("jpg") || ab.getFilename().endsWith("gif")) && ab.getSize()<10000))
+                res.add(ab);
+        }
+
+        return res;
+    }
+
+    public AttachmentBean getAttachment(String id) throws IOException {
+        AttachmentBean ab = new AttachmentBean();
+        SearchResponse response = client.prepareSearch("attachments").
+                setQuery(QueryBuilders.matchQuery("_id",id)).
+                addFields("attachment","mime","filename").
+                execute().actionGet();
+        for (SearchHit hit : response.getHits().getHits()) {
+            ab.setData(Base64.decode((String)hit.getFields().get("attachment").getValue()));
+            ab.setMime((String) hit.getFields().get("mime").getValue());
+            ab.setFilename((String) hit.getFields().get("filename").getValue());
+        }
+
+        return ab;
     }
 
     public StatsBean getStats() {

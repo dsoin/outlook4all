@@ -1,5 +1,7 @@
 package com.fortify.techsupport.o4a.beans;
 
+import java.util.List;
+
 /**
  * Created by Dmitrii Soin on 27/11/14.
  */
@@ -10,6 +12,24 @@ public class SearchBean {
     private String body;
     private String sender;
     private String body_html;
+    private boolean hasAttachment=false;
+    private List<AttachmentBean> attachments;
+
+    public List<AttachmentBean> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<AttachmentBean> attachments) {
+        this.attachments = attachments;
+    }
+
+    public boolean isHasAttachment() {
+        return hasAttachment;
+    }
+
+    public void setHasAttachment(boolean hasAttachment) {
+        this.hasAttachment = hasAttachment;
+    }
 
     public void setSubmit_time(String submit_time) {
         this.submit_time = submit_time;
