@@ -6,6 +6,10 @@ var app = angular.module("Outlook4All", ['ui.bootstrap','angular-loading-bar'],f
       });
     });
 
+app.config(['$compileProvider' , function ($compileProvider)
+    {
+          $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|http):.*/);
+    }]);
 
 app.controller("LandingPageController", function($scope, $window,$http, $location) {
 

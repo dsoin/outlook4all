@@ -53,7 +53,7 @@
                 </tr>
                 <tr data-ng-show="eventDetailsCollapseMap[$index] && entry.hasAttachment">
                     <td><img src="attachment.jpeg" style="max-height:20px; margin-top: 0px;"/>
-                        <span class="label" data-ng-repeat="attach in entry.attachments"><a target="_new" href="/download/{{attach.id}}">{{attach.filename}} ({{attach.size}}b)</a></span></td>
+                        <span class="label" data-ng-repeat="attach in entry.attachments"><a target="_new" ng-href="/download/{{attach.id}}">{{attach.filename}} ({{attach.size}}b)</a></span></td>
                 </tr>
                 <tr data-ng-show="eventDetailsCollapseMap[$index]">
                     <td ng-if="entry.body_html!=''" ng-bind-html="entry.body_html | sanitize"></td>
