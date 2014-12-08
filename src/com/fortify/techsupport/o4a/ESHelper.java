@@ -35,7 +35,7 @@ public class ESHelper {
         SearchResponse response = client.prepareSearch("emails").setSearchType(SearchType.QUERY_THEN_FETCH).
                 setQuery(QueryBuilders.multiMatchQuery(query, "body", "topic")).
                 addHighlightedField("body", 500, 1).addHighlightedField("topic", 50, 1).
-                addFields("topic", "sender", "submit_time").
+                addFields("topic", "sender", "submit_time","has_attachment").
                 setFrom(from).
                 execute().actionGet();
 
@@ -46,6 +46,8 @@ public class ESHelper {
             SearchBean bean = new SearchBean();
             bean.setSubmit_time((String) hit.getFields().get("submit_time").getValue());
             bean.setTopic((String) hit.getFields().get("topic").getValue());
+            if (hit.getFields().get("has_attachment")!=null)
+                bean.setHasAttachment(true);
             if (hit.getHighlightFields().get("body") != null)
                 bean.setBody(hit.getHighlightFields().get("body").getFragments()[0].string());
             sbs.add(bean);
