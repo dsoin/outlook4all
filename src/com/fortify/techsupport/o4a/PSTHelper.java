@@ -34,7 +34,7 @@ public class PSTHelper {
         Properties prop = new Properties();
         prop.load(new FileReader("o4a.properties"));
         String pstFilename = (String) prop.get("pstfile");
-        prepareIndexesAndMappings();
+      //  prepareIndexesAndMappings();
 
 
         PSTFile pstFile = new PSTFile(pstFilename);
@@ -57,6 +57,7 @@ public class PSTHelper {
         // and now the emails for this folder
         int topics = 0;
         if (folder.getContentCount() > 0) {
+            log.info(folder.getContentCount());
             PSTMessage email = (PSTMessage) folder.getNextChild();
             while (email != null) {
 

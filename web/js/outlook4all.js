@@ -26,6 +26,12 @@ $http.get('/stats').
       $scope.topDiscussedEver = data["topDiscussedEver"];
       $scope.topPostersEver = data["topPostersEver"];
       $scope.recent = data["recent"];
+      $scope.emailsCount = data["emailsCount"];
+      $scope.emailsSize = data["emailsSize"];
+      $scope.attachmentsCount = data["attachmentsCount"];
+      $scope.attachmentsSize = data["attachmentsSize"];
+      $scope.firstPost = data["firstPost"];
+      $scope.lastPost = data["lastPost"];
 
 
 
@@ -50,7 +56,7 @@ $scope.init = function () {
     // and fire search in case its value is not empty
 };
 
-$http.get('/getconv/'+$location.search().q).
+$http.get('/getconv/'+escape($location.search().q)).
  success(function(data, status, headers, config) {
 
     $scope.eventDetailsCollapseMap=[];

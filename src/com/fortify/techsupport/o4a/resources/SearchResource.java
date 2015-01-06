@@ -25,7 +25,8 @@ public class SearchResource extends O4AResource {
     @Get("json")
     public SearchResultsBean searchEmails() {
 
-        return esHelper.searchEmails(query, from);
+        boolean phrase = query.startsWith("\"") && query.endsWith("\"");
+        return esHelper.searchEmails(query, from,phrase);
 
     }
 }

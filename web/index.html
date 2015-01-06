@@ -55,16 +55,26 @@
 
 
         <div class="col-md-3" style="font-size:12px;">
-            <span class="label label-info">Most discussed (ever)</span>
 
+            <div style="font-size:12px;">
+                <span style="font-size:11px;" class="label label-primary">{{firstPost| date:'medium'}} - {{lastPost| date:'medium'}}</span>
+                <table class="table-condensed table-hover">
+                    <tr><td><span style="font-size:11px;" class="badge">{{emailsCount}}</span> emails ({{emailsSize/1024/1024|number:2}}Mb)</td></tr>
+                    <tr><td><span class="badge">{{attachmentsCount}}</span> attachments ({{attachmentsSize/1024/1024|number:2}}Mb)</td></tr>
+                </table>
 
-            <table class="table-condensed table-hover">
-            <tbody data-ng-repeat="entry in topDiscussedEver " class="list-group">
-                <tr><td><span class="badge">{{entry.value}}</span>&nbsp;<a target="_self" href="/conversation.html?q={{entry.text | escape}}">{{entry.text}}</a></td>
+            </div>
+            <div>
+                <span class="label label-info">Most discussed (ever)</span>
+                <table class="table-condensed table-hover">
+                    <tbody data-ng-repeat="entry in topDiscussedEver " class="list-group">
+                    <tr><td><span class="badge">{{entry.value}}</span>&nbsp;<a target="_self" href="/conversation.html?q={{entry.text | escape}}">{{entry.text}}</a></td>
 
-                </tr>
-            </tbody>
-            </table>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
         </div>
 
     <div class="col-md-3" style="font-size:12px;">

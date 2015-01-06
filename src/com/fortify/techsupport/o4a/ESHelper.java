@@ -2,6 +2,8 @@ package com.fortify.techsupport.o4a;
 
 import com.fortify.techsupport.o4a.beans.*;
 import org.apache.commons.logging.impl.SimpleLog;
+import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequest;
+import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -9,6 +11,7 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.Base64;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.Aggregation;
@@ -30,10 +33,11 @@ public class ESHelper {
             .addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
     final SimpleLog log = new SimpleLog(this.getClass().getName());
 
-    public SearchResultsBean searchEmails(String query, int from) {
+    public SearchResultsBean searchEmails(String query, int from, boolean phrase) {
+
         SearchResultsBean sb = new SearchResultsBean();
         SearchResponse response = client.prepareSearch("emails").setSearchType(SearchType.QUERY_THEN_FETCH).
-                setQuery(QueryBuilders.multiMatchQuery(query, "body", "topic")).
+                setQuery(QueryBuilders.multiMatchQuery(query, "body", "topic").type(phrase?MultiMatchQueryBuilder.Type.PHRASE_PREFIX:MultiMatchQueryBuilder.Type.BEST_FIELDS)).
                 addHighlightedField("body", 500, 1).addHighlightedField("topic", 50, 1).
                 addFields("topic", "sender", "submit_time","has_attachment").
                 setFrom(from).
@@ -141,7 +145,23 @@ public class ESHelper {
                                 subAggregation(AggregationBuilders.avg("ta").field("submit_time"))))
                 .execute().actionGet();
         sb.setRecent(pullAggsResult(((Filter) response.getAggregations().get("filter1m")).getAggregations().get("stats")));
+//get index stats
+        IndicesStatsResponse is = client.admin().indices().prepareStats("emails","attachments").execute().actionGet();
+        sb.setEmailsCount(is.getIndex("emails").getTotal().docs.getCount());
+        sb.setEmailsSize(is.getIndex("emails").getTotal().getStore().sizeInBytes());
+        sb.setAttachmentsCount(is.getIndex("attachments").getTotal().docs.getCount());
+        sb.setAttachmentsSize(is.getIndex("attachments").getTotal().getStore().sizeInBytes());
 
+        response = client.prepareSearch("emails").setSearchType(SearchType.QUERY_THEN_FETCH).
+                setQuery(QueryBuilders.matchAllQuery()).addSort(SortBuilders.fieldSort("submit_time").order(SortOrder.DESC)).
+                addField("submit_time").
+                execute().actionGet();
+        sb.setLastPost((String)response.getHits().getHits()[0].getFields().get("submit_time").getValue());
+        response = client.prepareSearch("emails").setSearchType(SearchType.QUERY_THEN_FETCH).
+                setQuery(QueryBuilders.matchAllQuery()).addSort(SortBuilders.fieldSort("submit_time").order(SortOrder.ASC)).
+                addField("submit_time").
+                execute().actionGet();
+        sb.setFirstPost((String) response.getHits().getHits()[0].getFields().get("submit_time").getValue());
         return sb;
     }
 
