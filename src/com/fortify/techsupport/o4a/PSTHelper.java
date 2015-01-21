@@ -6,10 +6,13 @@ import org.apache.commons.logging.impl.SimpleLog;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.Requests;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 
 import java.io.*;
@@ -55,23 +58,41 @@ public class PSTHelper {
         }
 
         // and now the emails for this folder
-        int topics = 0;
+        int pushed = 0;
         if (folder.getContentCount() > 0) {
             log.info(folder.getContentCount());
             PSTMessage email = (PSTMessage) folder.getNextChild();
             while (email != null) {
 
-               String id = pushEmail(email);
-                if (email.hasAttachments()) {
-                    pushAttachments(email, id);
+                if (!alreadyIndexed(email)) {
+                    String id = pushEmail(email);
+                    if (email.hasAttachments()) {
+                        pushAttachments(email, id);
 
+                    }
+                    pushed++;
                 }
                 email = (PSTMessage) folder.getNextChild();
                 //break;
             }
         }
+        log.info("Pushed " + pushed +" emails");
     }
 
+    private static boolean alreadyIndexed(PSTMessage email) {
+        if ("".equals(email.getBody()) && "".equals(email.getBodyHTML()))
+            return true;
+        SearchResponse response = client.prepareSearch("emails").setSearchType(SearchType.QUERY_THEN_FETCH).
+                setQuery(QueryBuilders.matchPhrasePrefixQuery("body",email.getBody())).execute().actionGet();
+        if (response.getHits().getHits().length>0)
+            return true;
+        response = client.prepareSearch("emails").setSearchType(SearchType.QUERY_THEN_FETCH).
+                setQuery(QueryBuilders.matchPhrasePrefixQuery("body_html",email.getBodyHTML())).execute().actionGet();
+        if (response.getHits().getHits().length>0)
+            return true;
+        return false;
+
+    }
     private static void pushAttachments(PSTMessage email, String id) throws PSTException, IOException {
         for (int i=0;i<email.getNumberOfAttachments();i++) {
             PSTAttachment attach = email.getAttachment(i);
