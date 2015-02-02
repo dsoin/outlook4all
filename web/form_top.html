@@ -1,12 +1,18 @@
 <nav class="navbar navbar-default navbar-top" role="navigation">
 <div class="navbar-header">
     <a class="navbar-brand" href="/" target="_self"><img src="/foodle.jpg" title ="Foodle" style="max-height:40px; margin-top: -10px;"/></a>
+
 </div>
 <form novalidate name="searchForm" class="navbar-form navbar-center navbar-input-group" role="search">
     <div class="form-group">
         <input type="text" id="q" class="form-control" ng-model="query" size="100" placeholder="Search for..." autofocus auto-focus>
     </div>
     <button ng-click="search(query)" class="btn btn-primary">Search</button>
+
+    <span class="navbar-right navbar-top" style="font-size: 12px;color:red;word-wrap:break-word;display:block;">
+        If you like this app please support it on <a href="https://garage.brightidea.com/D21309">InnoStream 2015 Winter Cycle</a>
+        </span>
+
 </form>
 </nav>
 
