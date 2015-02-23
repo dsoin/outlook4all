@@ -33,5 +33,14 @@ applicationDistribution.from("web") {
 }
 applicationDistribution.from("o4a.properties") {
     into ""
+
 }
 
+applicationDistribution.from("emails-template.json") {
+    into ""
+
+}
+applicationDistribution.from("attachments-template.json") {
+    into ""
+
+}

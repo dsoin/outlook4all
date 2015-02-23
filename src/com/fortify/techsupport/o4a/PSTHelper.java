@@ -37,7 +37,7 @@ public class PSTHelper {
         Properties prop = new Properties();
         prop.load(new FileReader("o4a.properties"));
         String pstFilename = (String) prop.get("pstfile");
-      //  prepareIndexesAndMappings();
+       // prepareIndexesAndMappings();
 
 
         PSTFile pstFile = new PSTFile(pstFilename);
@@ -149,7 +149,7 @@ public class PSTHelper {
     }
 
     private static void prepareIndexesAndMappings() throws IOException {
-
+/*
         try {
 
             client.admin().indices().delete(new DeleteIndexRequest("emails"));
@@ -158,6 +158,7 @@ public class PSTHelper {
             client.admin().indices().deleteMapping(new DeleteMappingRequest("attachments").types("*")).actionGet();
         } catch (IndexMissingException ex) {
         }
+        */
         client.admin().indices().preparePutTemplate("emails").
                 setSource(new String(Files.readAllBytes(Paths.get("emails-template.json")))).
 
