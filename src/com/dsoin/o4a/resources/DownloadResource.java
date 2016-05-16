@@ -1,18 +1,15 @@
-package com.fortify.techsupport.o4a.resources;
+package com.dsoin.o4a.resources;
 
-import com.fortify.techsupport.o4a.beans.AttachmentBean;
+import com.dsoin.o4a.beans.AttachmentBean;
 import org.apache.tika.Tika;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.representation.ByteArrayRepresentation;
-import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URLConnection;
 
 /**
  * Created by Dmitrii Soin on 05/12/14.

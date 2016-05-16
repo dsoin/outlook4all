@@ -1,7 +1,8 @@
-package com.fortify.techsupport.o4a.resources;
+package com.dsoin.o4a.resources;
 
-import com.fortify.techsupport.o4a.ESHelper;
-import org.apache.commons.logging.impl.SimpleLog;
+import com.dsoin.o4a.ESHelper;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
@@ -14,7 +15,7 @@ import java.net.URLDecoder;
 public class O4AResource extends ServerResource {
     protected String query;
     protected ESHelper esHelper = new ESHelper();
-    protected SimpleLog log = new SimpleLog(this.getClass().getName());
+    protected final Logger log = LogManager.getLogger(this.getClass().getName());
 
     @Override
     protected void doInit() throws ResourceException {

@@ -1,6 +1,6 @@
-package com.fortify.techsupport.o4a.resources;
+package com.dsoin.o4a.resources;
 
-import com.fortify.techsupport.o4a.beans.StatsBean;
+import com.dsoin.o4a.beans.StatsBean;
 import org.restlet.resource.Get;
 
 /**

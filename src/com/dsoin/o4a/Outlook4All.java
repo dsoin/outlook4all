@@ -1,10 +1,12 @@
-package com.fortify.techsupport.o4a;
+package com.dsoin.o4a;
 
-import com.fortify.techsupport.o4a.resources.ConversationResource;
-import com.fortify.techsupport.o4a.resources.DownloadResource;
-import com.fortify.techsupport.o4a.resources.SearchResource;
-import com.fortify.techsupport.o4a.resources.StatsResource;
-import org.apache.commons.logging.impl.SimpleLog;
+import com.dsoin.o4a.resources.ConversationResource;
+import com.dsoin.o4a.resources.DownloadResource;
+import com.dsoin.o4a.resources.SearchResource;
+import com.dsoin.o4a.resources.StatsResource;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
@@ -22,9 +24,12 @@ import java.util.Properties;
  * Created by soind on 11/20/2014.
  */
 public class Outlook4All {
-    private static SimpleLog log = new SimpleLog("Outlook4All");
     private static Properties props = new Properties();
-
+    static {
+        System.setProperty("org.apache.commons.logging.simplelog.showdatetime","true");
+        PropertyConfigurator.configure("log4j.properties");
+    }
+    private static final Logger log = LogManager.getLogger(Outlook4All.class);
     public static void main(String[] args) throws Exception {
 
         props.load(new FileReader("o4a.properties"));

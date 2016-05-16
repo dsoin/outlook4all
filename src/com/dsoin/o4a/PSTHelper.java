@@ -1,10 +1,8 @@
-package com.fortify.techsupport.o4a;
+package com.dsoin.o4a;
 
 import com.pff.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.impl.SimpleLog;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -13,7 +11,6 @@ import org.elasticsearch.client.Requests;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.indices.IndexMissingException;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -37,7 +34,7 @@ public class PSTHelper {
         Properties prop = new Properties();
         prop.load(new FileReader("o4a.properties"));
         String pstFilename = (String) prop.get("pstfile");
-       // prepareIndexesAndMappings();
+        prepareIndexesAndMappings();
 
 
         PSTFile pstFile = new PSTFile(pstFilename);
@@ -72,8 +69,13 @@ public class PSTHelper {
                     }
                     pushed++;
                 }
-                email = (PSTMessage) folder.getNextChild();
-                //break;
+                try {
+                    email = (PSTMessage) folder.getNextChild();
+                    //break;
+                } catch (PSTException ex) {
+                    log.error("Error getting next child",ex);
+                    email=null;
+                }
             }
         }
         log.info("Pushed " + pushed +" emails");
@@ -99,18 +101,20 @@ public class PSTHelper {
             Map<String, Object> emailJson = new HashMap<>();
             String filename = attach.getLongFilename().isEmpty()?attach.getFilename():attach.getLongFilename();
             byte[] encodedAttach = getAttachment(attach);
-            emailJson.put("filename",filename);
-            emailJson.put("email_id",id);
-            emailJson.put("mime",attach.getMimeTag());
-            emailJson.put("size",attach.getAttachSize());
-            emailJson.put("attachment",new String(encodedAttach));
+            if (encodedAttach!=null) {
+                emailJson.put("filename", filename);
+                emailJson.put("email_id", id);
+                emailJson.put("mime", attach.getMimeTag());
+                emailJson.put("size", attach.getAttachSize());
+                emailJson.put("attachment", new String(encodedAttach));
 
-            IndexResponse response = client.prepareIndex("attachments", "ssc")
-                    .setSource(emailJson
-                    )
-                    .execute()
-                    .actionGet();
+                IndexResponse response = client.prepareIndex("attachments", "ssc")
+                        .setSource(emailJson
+                        )
+                        .execute()
+                        .actionGet();
 
+            }
         }
     }
 
@@ -118,6 +122,8 @@ public class PSTHelper {
         InputStream attachmentStream = attach.getFileInputStream();
         byte[] buffer = new byte[attach.getAttachSize()];
         int count = attachmentStream.read(buffer);
+        if (count<=0)
+            return null;
         byte[] endBuffer = new byte[count];
         System.arraycopy(buffer, 0, endBuffer, 0, count);
         attachmentStream.close();

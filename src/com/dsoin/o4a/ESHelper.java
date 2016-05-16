@@ -1,8 +1,8 @@
-package com.fortify.techsupport.o4a;
+package com.dsoin.o4a;
 
-import com.fortify.techsupport.o4a.beans.*;
-import org.apache.commons.logging.impl.SimpleLog;
-import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequest;
+import com.dsoin.o4a.beans.*;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -31,8 +31,7 @@ import java.util.List;
 public class ESHelper {
     final static Client client = new TransportClient()
             .addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
-    final SimpleLog log = new SimpleLog(this.getClass().getName());
-
+    private final Logger log = LogManager.getLogger(this.getClass().getName());
     public SearchResultsBean searchEmails(String query, int from, boolean phrase) {
 
         SearchResultsBean sb = new SearchResultsBean();

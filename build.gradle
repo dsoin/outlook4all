@@ -1,6 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'application'
-mainClassName = "com.fortify.techsupport.o4a.Outlook4All"
+mainClassName = "Outlook4All"
 
 repositories {
     mavenCentral()
@@ -12,6 +12,7 @@ dependencies {
     compile "org.restlet.jee:org.restlet.ext.jackson:2.2.2"
     compile group:'org.apache.httpcomponents',name:'httpclient',version:'4.3.3'
     compile group:'commons-primitives',name:'commons-primitives',version:'1.0'
+    compile 'log4j:log4j:1.2.17'
     compile 'com.pff:java-libpst:0.7'
     compile 'org.apache.tika:tika-core:1.6'
     compile 'org.elasticsearch:elasticsearch:1.4.0'
@@ -42,5 +43,9 @@ applicationDistribution.from("emails-template.json") {
 }
 applicationDistribution.from("attachments-template.json") {
     into ""
+
+applicationDistribution.from("log4j.properties") {
+        into ""
+    }
 
 }

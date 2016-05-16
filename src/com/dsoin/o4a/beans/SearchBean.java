@@ -1,4 +1,4 @@
-package com.fortify.techsupport.o4a.beans;
+package com.dsoin.o4a.beans;
 
 import java.util.List;
 
