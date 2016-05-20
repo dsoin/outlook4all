@@ -5,3 +5,4 @@ outside of Outlook. It expects an ES instance to have data already imported and 
 It expects "emails" index to be present and the following mapping:
 <TBD>
 
+It needs Outlook connector to pull emails into ES index.
