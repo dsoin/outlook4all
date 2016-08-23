@@ -13,6 +13,8 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilders;
 
 import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -25,9 +27,16 @@ import java.util.Vector;
  */
 public class PSTHelper {
     final static SimpleLog log = new SimpleLog(PSTHelper.class.getName());
+    private  static Client client;
+    static {
+        try {
+            client = TransportClient.builder().build().
+                    addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
+        } catch (UnknownHostException e) {
+            log.error(e);
+        }
+    }
 
-    private static Client client = new TransportClient().
-            addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
 
 
     public static void main(String[] args) throws IOException, PSTException {

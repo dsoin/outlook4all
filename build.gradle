@@ -15,7 +15,7 @@ dependencies {
     compile 'log4j:log4j:1.2.17'
     compile 'com.pff:java-libpst:0.7'
     compile 'org.apache.tika:tika-core:1.6'
-    compile 'org.elasticsearch:elasticsearch:1.4.0'
+    compile 'org.elasticsearch:elasticsearch:2.3.5'
     }
 
 sourceSets {
