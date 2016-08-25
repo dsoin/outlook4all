@@ -10,8 +10,8 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.Base64;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.Aggregation;
@@ -22,6 +22,8 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +31,22 @@ import java.util.List;
  * Created by Dmitrii Soin on 27/11/14.
  */
 public class ESHelper {
-    final static Client client = new TransportClient()
-            .addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
-    private final Logger log = LogManager.getLogger(this.getClass().getName());
+    private static Client client;
+    private final static Logger log = LogManager.getLogger(ESHelper.class);
+
+    static {
+        try {
+            client = TransportClient.builder().build()
+                    .addTransportAddress(
+                            new InetSocketTransportAddress(InetAddress.getByName("192.168.56.1"), 9300));
+        } catch (UnknownHostException e) {
+            log.error(e);
+        }
+    }
+
+
+
+
     public SearchResultsBean searchEmails(String query, int from, boolean phrase) {
 
         SearchResultsBean sb = new SearchResultsBean();
@@ -66,7 +81,7 @@ public class ESHelper {
 
         SearchResponse response = client.prepareSearch("emails").setSearchType(SearchType.QUERY_THEN_FETCH).
                 setQuery(QueryBuilders.matchPhrasePrefixQuery("topic.raw", topic)).
-                addSort(SortBuilders.fieldSort("submit_time").order(SortOrder.DESC)).setSize(Integer.MAX_VALUE).
+                addSort(SortBuilders.fieldSort("submit_time").order(SortOrder.DESC)).setSize(1000).
                 execute().actionGet();
 
         for (SearchHit hit : response.getHits().getHits()) {
@@ -139,7 +154,8 @@ public class ESHelper {
 
 // get recent
         response = client.prepareSearch("emails").setSearchType(SearchType.COUNT).
-                addAggregation(AggregationBuilders.filter("filter1m").filter(FilterBuilders.rangeFilter("submit_time").to("now").from("now-1M")).
+                addAggregation(AggregationBuilders.filter("filter1m").
+                        filter(QueryBuilders.rangeQuery("submit_time").to("now").from("now-1M")).
                         subAggregation(AggregationBuilders.terms("stats").field("topic.raw").size(40).order(Terms.Order.aggregation("ta", false)).
                                 subAggregation(AggregationBuilders.avg("ta").field("submit_time"))))
                 .execute().actionGet();
@@ -169,7 +185,7 @@ public class ESHelper {
         if (agg != null) {
             for (Terms.Bucket statBusket : ((Terms) agg).getBuckets()) {
                 StatItemBean sib = new StatItemBean();
-                sib.setText(statBusket.getKey());
+                sib.setText((String) statBusket.getKey());
                 sib.setValue(statBusket.getDocCount());
                 si.add(sib);
             }
