@@ -38,7 +38,7 @@ public class ESHelper {
         try {
             client = TransportClient.builder().build()
                     .addTransportAddress(
-                            new InetSocketTransportAddress(InetAddress.getByName("192.168.56.1"), 9300));
+                            new InetSocketTransportAddress(InetAddress.getByName("127.0.0.1"), 9300));
         } catch (UnknownHostException e) {
             log.error(e);
         }
