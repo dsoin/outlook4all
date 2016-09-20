@@ -12,7 +12,7 @@ public class SearchBean {
     private String body;
     private String sender;
     private String body_html;
-    private boolean hasAttachment=false;
+    private boolean hasAttachment = false;
     private List<AttachmentBean> attachments;
 
     public List<AttachmentBean> getAttachments() {
@@ -29,22 +29,6 @@ public class SearchBean {
 
     public void setHasAttachment(boolean hasAttachment) {
         this.hasAttachment = hasAttachment;
-    }
-
-    public void setSubmit_time(String submit_time) {
-        this.submit_time = submit_time;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
-
-    public void setBody_html(String body_html) {
-        this.body_html = body_html;
     }
 
     public String getTopic() {
@@ -67,15 +51,31 @@ public class SearchBean {
         return submit_time;
     }
 
+    public void setSubmit_time(String submit_time) {
+        this.submit_time = submit_time;
+    }
+
     public String getBody() {
         return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 
     public String getSender() {
         return sender;
     }
 
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
+
     public String getBody_html() {
         return body_html;
+    }
+
+    public void setBody_html(String body_html) {
+        this.body_html = body_html;
     }
 }

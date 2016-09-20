@@ -64,28 +64,28 @@ public class StatsBean {
         this.attachmentsSize = attachmentsSize;
     }
 
-    public void setRecent(List<StatItemBean> recent) {
-        this.recent = recent;
-    }
-
-    public void setTopPostersEver(List<StatItemBean> topPostersEver) {
-        this.topPostersEver = topPostersEver;
+    public List<StatItemBean> getTopDiscussedEver() {
+        return topDiscussedEver;
     }
 
     public void setTopDiscussedEver(List<StatItemBean> topDiscussedEver) {
         this.topDiscussedEver = topDiscussedEver;
     }
 
-    public List<StatItemBean> getTopDiscussedEver() {
-        return topDiscussedEver;
-    }
-
     public List<StatItemBean> getTopPostersEver() {
         return topPostersEver;
     }
 
+    public void setTopPostersEver(List<StatItemBean> topPostersEver) {
+        this.topPostersEver = topPostersEver;
+    }
+
     public List<StatItemBean> getRecent() {
         return recent;
+    }
+
+    public void setRecent(List<StatItemBean> recent) {
+        this.recent = recent;
     }
 
 
