@@ -72,7 +72,6 @@ $scope.search = function (query) {
     console.log(this.query);
     var q = encodeURIComponent(this.query);
 
-
     $window.location.href='/search.html?q='+q;
 };
 
@@ -131,7 +130,6 @@ $scope.pageSearch = function (query) {
           $scope.hits = data["totalHits"];
           $scope.searchRes = data["searchResults"];
           $window.scrollTo(0,0);
-
 
 
         }).
