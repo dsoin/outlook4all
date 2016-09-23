@@ -1,2 +1,4 @@
 pstfile=ssc.pst
-port=9080
+eshost=localhost
+esport=9300
+bindport=9080
