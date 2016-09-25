@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.net.InetAddress;
 import java.util.Properties;
+import com.sun.net.ssl.internal.ssl.Provider;
+import java.security.Security;
 
 /**
  * Created by soind on 11/20/2014.
@@ -44,8 +46,16 @@ public class Outlook4All {
 
 
     private static void initREST() throws Exception {
+        Security.addProvider(new Provider());
+        //Specifying the Keystore details
+        System.setProperty("javax.net.ssl.keyStore",props.getProperty("keystore"));
+        System.setProperty("javax.net.ssl.keyStorePassword","dsoin!");
+
+        // Enable debugging to view the handshake and communication which happens between the SSLClient and the SSLServer
+        // System.setProperty("javax.net.debug","all");
+
         Component component = new Component();
-        component.getServers().add(Protocol.HTTP, new Integer(props.getProperty("bindport")));
+        component.getServers().add(Protocol.HTTPS, new Integer(props.getProperty("bindport")));
         component.getClients().add(Protocol.FILE);
         log.info(Reference.decode(new File("").toURI().toString() + File.separator + "web"));
 // Create an static contect app

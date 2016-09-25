@@ -2,3 +2,4 @@ pstfile=ssc.pst
 eshost=localhost
 esport=9300
 bindport=9080
+keystore=/Applications/KeyStore.jks
