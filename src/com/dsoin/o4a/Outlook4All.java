@@ -4,12 +4,12 @@ import com.dsoin.o4a.resources.ConversationResource;
 import com.dsoin.o4a.resources.DownloadResource;
 import com.dsoin.o4a.resources.SearchResource;
 import com.dsoin.o4a.resources.StatsResource;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
@@ -35,7 +35,7 @@ public class Outlook4All {
 
     static {
         System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-        PropertyConfigurator.configure("log4j.properties");
+
     }
 
     public static void main(String[] args) throws Exception {
@@ -68,10 +68,11 @@ public class Outlook4All {
         };
 
         component.getDefaultHost().attach(staticapp);
-        Client client = TransportClient.builder().build()
+        Client client = new PreBuiltTransportClient(Settings.EMPTY)
                 .addTransportAddress(
                         new InetSocketTransportAddress(InetAddress.getByName(props.getProperty("eshost")),
                                 new Integer(props.getProperty("esport"))));
+
 
         staticapp.getContext().getAttributes().put("esclient", client);
 

@@ -27,7 +27,7 @@ public class DownloadResource extends O4AResource {
     public Representation download() throws IOException {
         AttachmentBean ab = esHelper.getAttachment(id);
 
-        log.info(new MediaType(new Tika().detect(ab.getData())));
+        log.error(new MediaType(new Tika().detect(ab.getData())));
         ByteArrayRepresentation ba = new ByteArrayRepresentation(ab.getData(), new MediaType(new Tika().detect(ab.getData())));
         Disposition disp = new Disposition(Disposition.NAME_FILENAME);
         disp.setFilename(ab.getFilename());

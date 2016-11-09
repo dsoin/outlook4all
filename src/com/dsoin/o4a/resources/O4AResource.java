@@ -1,8 +1,8 @@
 package com.dsoin.o4a.resources;
 
 import com.dsoin.o4a.ESHelper;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Client;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;

@@ -1,13 +1,14 @@
 package com.dsoin.o4a;
 
 import com.dsoin.o4a.beans.*;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.Base64;
+import org.elasticsearch.common.bytes.BytesArray;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -15,11 +16,13 @@ import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -37,13 +40,16 @@ public class ESHelper {
     public SearchResultsBean searchEmails(String query, int from, boolean phrase) {
 
         SearchResultsBean sb = new SearchResultsBean();
-        SearchResponse response = client.prepareSearch("emails").setSearchType(SearchType.QUERY_THEN_FETCH).
+        SearchResponse response = client.prepareSearch("data").setSearchType(SearchType.QUERY_THEN_FETCH).
                 setQuery(QueryBuilders.multiMatchQuery(query, "body", "topic").type(phrase ? MultiMatchQueryBuilder.Type.PHRASE_PREFIX : MultiMatchQueryBuilder.Type.BEST_FIELDS)).
-                addHighlightedField("body", 500, 1).addHighlightedField("topic", 50, 1).
-                addFields("topic", "sender", "submit_time", "has_attachment").
+                highlighter(new HighlightBuilder().field("body",500,1).field("topic",200,1)).
+                addStoredField("topic").
+                addStoredField("body").
+                addStoredField("sender").
+                addStoredField("submit_time").
+                addStoredField("has_attachment").
                 setFrom(from).
                 execute().actionGet();
-
         sb.setTotalHits(response.getHits().getTotalHits());
         sb.setTook(response.getTook().getMillis());
         List<SearchBean> sbs = new ArrayList<>();
@@ -66,8 +72,8 @@ public class ESHelper {
     public List<SearchBean> getConversation(String topic) {
         List<SearchBean> convs = new ArrayList<>();
 
-        SearchResponse response = client.prepareSearch("emails").setSearchType(SearchType.QUERY_THEN_FETCH).
-                setQuery(QueryBuilders.matchPhrasePrefixQuery("topic.raw", topic)).
+        SearchResponse response = client.prepareSearch("data").setSearchType(SearchType.QUERY_THEN_FETCH).
+                setQuery(QueryBuilders.matchPhrasePrefixQuery("topic.keyword", topic)).
                 addSort(SortBuilders.fieldSort("submit_time").order(SortOrder.DESC)).setSize(1000).
                 execute().actionGet();
 
@@ -94,8 +100,9 @@ public class ESHelper {
     private List<AttachmentBean> getAttachments(String emailID) {
         List<AttachmentBean> res = new ArrayList<>();
         SearchResponse response = client.prepareSearch("attachments").
-                setQuery(QueryBuilders.matchQuery("email_id.raw", emailID)).
-                addFields("filename", "size").
+                setQuery(QueryBuilders.termQuery("data_id", emailID)).
+                addStoredField("filename").
+                addStoredField("size").
                 execute().actionGet();
         for (SearchHit hit : response.getHits().getHits()) {
             AttachmentBean ab = new AttachmentBean();
@@ -113,13 +120,17 @@ public class ESHelper {
     public AttachmentBean getAttachment(String id) throws IOException {
         AttachmentBean ab = new AttachmentBean();
         SearchResponse response = client.prepareSearch("attachments").
-                setQuery(QueryBuilders.matchQuery("_id", id)).
-                addFields("attachment", "mime", "filename").
+                setQuery(QueryBuilders.termQuery("_id", id)).
+                addStoredField("attachment").
+                addStoredField("mime").
+                addStoredField("filename").
                 execute().actionGet();
         for (SearchHit hit : response.getHits().getHits()) {
-            ab.setData(Base64.decode((String) hit.getFields().get("attachment").getValue()));
-            ab.setMime((String) hit.getFields().get("mime").getValue());
-            ab.setFilename((String) hit.getFields().get("filename").getValue());
+            BytesArray bytes = hit.getFields().get("attachment").getValue();
+            ab.setData(Base64.getDecoder().decode(bytes.array()));
+            log.error(bytes.array());
+            ab.setMime(hit.getFields().get("mime").getValue());
+            ab.setFilename(hit.getFields().get("filename").getValue());
         }
 
         return ab;
@@ -128,39 +139,41 @@ public class ESHelper {
     public StatsBean getStats() {
         StatsBean sb = new StatsBean();
 //get top discussed
-        SearchResponse response = client.prepareSearch("emails").setSearchType(SearchType.COUNT).
-                addAggregation(AggregationBuilders.terms("stats").field("topic.raw").size(20)).
+        SearchResponse response = client.prepareSearch("data").setSize(0).
+                addAggregation(AggregationBuilders.terms("stats").field("topic.keyword").size(20)).
                 execute().actionGet();
+        log.error(response);
         sb.setTopDiscussedEver(pullAggsResult(response.getAggregations().get("stats")));
 //get top posters
-        response = client.prepareSearch("emails").setSearchType(SearchType.COUNT).
-                addAggregation(AggregationBuilders.terms("stats").field("sender.raw").size(20)).
+        response = client.prepareSearch("data").
+                addAggregation(AggregationBuilders.terms("stats").field("sender.keyword").size(20)).
                 execute().actionGet();
         sb.setTopPostersEver(pullAggsResult(response.getAggregations().get("stats")));
 
 // get recent
-        response = client.prepareSearch("emails").setSearchType(SearchType.COUNT).
-                addAggregation(AggregationBuilders.filter("filter1m").
-                        filter(QueryBuilders.rangeQuery("submit_time").to("now").from("now-1M")).
-                        subAggregation(AggregationBuilders.terms("stats").field("topic.raw").size(40).order(Terms.Order.aggregation("ta", false)).
+        response = client.prepareSearch("data").
+                addAggregation(AggregationBuilders.
+                        filter("filter1m",QueryBuilders.rangeQuery("submit_time").to("now").from("now-1y")).
+                        subAggregation(AggregationBuilders.terms("stats").field("topic.keyword").size(40).order(Terms.Order.aggregation("ta", false)).
                                 subAggregation(AggregationBuilders.avg("ta").field("submit_time"))))
                 .execute().actionGet();
-        sb.setRecent(pullAggsResult(((Filter) response.getAggregations().get("filter1m")).getAggregations().get("stats")));
+        sb.setRecent(pullAggsResult(((Filter) response.
+                getAggregations().get("filter1m")).getAggregations().get("stats")));
 //get index stats
-        IndicesStatsResponse is = client.admin().indices().prepareStats("emails", "attachments").execute().actionGet();
-        sb.setEmailsCount(is.getIndex("emails").getTotal().docs.getCount());
-        sb.setEmailsSize(is.getIndex("emails").getTotal().getStore().sizeInBytes());
+        IndicesStatsResponse is = client.admin().indices().prepareStats("data", "attachments").execute().actionGet();
+        sb.setEmailsCount(is.getIndex("data").getTotal().docs.getCount());
+        sb.setEmailsSize(is.getIndex("data").getTotal().getStore().sizeInBytes());
         sb.setAttachmentsCount(is.getIndex("attachments").getTotal().docs.getCount());
         sb.setAttachmentsSize(is.getIndex("attachments").getTotal().getStore().sizeInBytes());
 
-        response = client.prepareSearch("emails").setSearchType(SearchType.QUERY_THEN_FETCH).
+        response = client.prepareSearch("data").setSearchType(SearchType.QUERY_THEN_FETCH).setSize(10).
                 setQuery(QueryBuilders.matchAllQuery()).addSort(SortBuilders.fieldSort("submit_time").order(SortOrder.DESC)).
-                addField("submit_time").
+                addStoredField("submit_time").
                 execute().actionGet();
         sb.setLastPost((String) response.getHits().getHits()[0].getFields().get("submit_time").getValue());
-        response = client.prepareSearch("emails").setSearchType(SearchType.QUERY_THEN_FETCH).
+        response = client.prepareSearch("data").setSearchType(SearchType.QUERY_THEN_FETCH).
                 setQuery(QueryBuilders.matchAllQuery()).addSort(SortBuilders.fieldSort("submit_time").order(SortOrder.ASC)).
-                addField("submit_time").
+                addStoredField("submit_time").
                 execute().actionGet();
         sb.setFirstPost((String) response.getHits().getHits()[0].getFields().get("submit_time").getValue());
         return sb;

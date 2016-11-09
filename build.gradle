@@ -12,10 +12,13 @@ dependencies {
     compile "org.restlet.jee:org.restlet.ext.jackson:2.3.3"
     compile group:'org.apache.httpcomponents',name:'httpclient',version:'4.5.2'
     compile group:'commons-primitives',name:'commons-primitives',version:'1.0'
-    compile 'log4j:log4j:1.2.17'
+    compile group:'org.apache.logging.log4j',name:'log4j-api',version:'2.7'
+    compile group:'org.apache.logging.log4j',name:'log4j-core',version:'2.7'
+
     compile 'com.pff:java-libpst:0.8.1'
     compile 'org.apache.tika:tika-core:1.13'
-    compile 'org.elasticsearch:elasticsearch:2.4.0'
+    compile 'org.elasticsearch:elasticsearch:5.0.0'
+    compile group: 'org.elasticsearch.client', name: 'transport', version: '5.0.0'
     }
 
 sourceSets {
