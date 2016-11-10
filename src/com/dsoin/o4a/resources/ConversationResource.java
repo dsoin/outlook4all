@@ -12,7 +12,7 @@ public class ConversationResource extends O4AResource {
 
     @Get("json")
     public List<SearchBean> getConversation() {
-        return esHelper.getConversation(query);
+        return esHelper.getConversation(query, searchTypes);
 
     }
 }

@@ -1,9 +1,6 @@
 package com.dsoin.o4a;
 
-import com.dsoin.o4a.resources.ConversationResource;
-import com.dsoin.o4a.resources.DownloadResource;
-import com.dsoin.o4a.resources.SearchResource;
-import com.dsoin.o4a.resources.StatsResource;
+import com.dsoin.o4a.resources.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Client;
@@ -75,10 +72,13 @@ public class Outlook4All {
 
 
         staticapp.getContext().getAttributes().put("esclient", client);
+        ESHelper esHelper = new ESHelper(client);
+        staticapp.getContext().getAttributes().put("types",esHelper.getTypes());
 
-        component.getDefaultHost().attach("/search/{q}", createApp(SearchResource.class, staticapp.getContext()));
         component.getDefaultHost().attach("/search/{q}/{from}", createApp(SearchResource.class, staticapp.getContext()));
+        component.getDefaultHost().attach("/search/{q}/{from}/{types}", createApp(SearchResource.class, staticapp.getContext()));
         component.getDefaultHost().attach("/stats", createApp(StatsResource.class, staticapp.getContext()));
+        component.getDefaultHost().attach("/types", createApp(TypesResource.class, staticapp.getContext()));
         component.getDefaultHost().attach("/getconv/{q}", createApp(ConversationResource.class, staticapp.getContext()));
         component.getDefaultHost().attach("/download/{id}", createApp(DownloadResource.class, staticapp.getContext()));
 

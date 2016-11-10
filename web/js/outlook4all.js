@@ -11,7 +11,19 @@ app.config(['$compileProvider' , function ($compileProvider)
           $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|http):.*/);
     }]);
 
-app.controller("LandingPageController", function($scope, $window,$http, $location) {
+app.factory('typesService', function($http) {
+  return {
+    getTypes: function() {
+      return $http.get('/types');  //1. this returns promise
+    }
+  };
+});
+
+app.controller("LandingPageController", function($scope, $window,$http, $location,typesService) {
+typesService.getTypes().then(function(d) {
+    $scope.types = d.data;
+  });
+
 
 $scope.init = function () {
     // check if there is query in url
@@ -20,9 +32,6 @@ $scope.init = function () {
 
 $http.get('/stats').
  success(function(data, status, headers, config) {
-
-
-
       $scope.topDiscussedEver = data["topDiscussedEver"];
       $scope.topPostersEver = data["topPostersEver"];
       $scope.recent = data["recent"];
@@ -32,9 +41,6 @@ $http.get('/stats').
       $scope.attachmentsSize = data["attachmentsSize"];
       $scope.firstPost = data["firstPost"];
       $scope.lastPost = data["lastPost"];
-
-
-
     }).
     error(function(data, status, headers, config) {
       // log error
@@ -42,8 +48,6 @@ $http.get('/stats').
 $scope.search = function (query) {
     console.log(this.query);
     var q = encodeURIComponent(this.query);
-
-
     $window.location.href='/search.html?q='+q;
 };
 

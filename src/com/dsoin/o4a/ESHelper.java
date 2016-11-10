@@ -1,14 +1,20 @@
 package com.dsoin.o4a;
 
+import com.carrotsearch.hppc.cursors.ObjectObjectCursor;
 import com.dsoin.o4a.beans.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
+import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
+import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.cluster.ClusterState;
+import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.bytes.BytesArray;
+import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -24,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Dmitrii Soin on 27/11/14.
@@ -37,14 +44,14 @@ public class ESHelper {
         this.client = client;
     }
 
-    public SearchResultsBean searchEmails(String query, int from, boolean phrase) {
-
+    public SearchResultsBean searchEmails(String query, int from, boolean phrase, String[] types) {
         SearchResultsBean sb = new SearchResultsBean();
-        SearchResponse response = client.prepareSearch("data").setSearchType(SearchType.QUERY_THEN_FETCH).
+        SearchResponse response = client.prepareSearch("data").
+                setTypes(types).
+                setSearchType(SearchType.QUERY_THEN_FETCH).
                 setQuery(QueryBuilders.multiMatchQuery(query, "body", "topic").type(phrase ? MultiMatchQueryBuilder.Type.PHRASE_PREFIX : MultiMatchQueryBuilder.Type.BEST_FIELDS)).
                 highlighter(new HighlightBuilder().field("body",500,1).field("topic",200,1)).
                 addStoredField("topic").
-                addStoredField("body").
                 addStoredField("sender").
                 addStoredField("submit_time").
                 addStoredField("has_attachment").
@@ -69,10 +76,11 @@ public class ESHelper {
 
     }
 
-    public List<SearchBean> getConversation(String topic) {
+    public List<SearchBean> getConversation(String topic, String[] types) {
         List<SearchBean> convs = new ArrayList<>();
-
-        SearchResponse response = client.prepareSearch("data").setSearchType(SearchType.QUERY_THEN_FETCH).
+        SearchResponse response = client.prepareSearch("data").
+                setTypes(types).
+                setSearchType(SearchType.QUERY_THEN_FETCH).
                 setQuery(QueryBuilders.matchPhrasePrefixQuery("topic.keyword", topic)).
                 addSort(SortBuilders.fieldSort("submit_time").order(SortOrder.DESC)).setSize(1000).
                 execute().actionGet();
@@ -142,7 +150,6 @@ public class ESHelper {
         SearchResponse response = client.prepareSearch("data").setSize(0).
                 addAggregation(AggregationBuilders.terms("stats").field("topic.keyword").size(20)).
                 execute().actionGet();
-        log.error(response);
         sb.setTopDiscussedEver(pullAggsResult(response.getAggregations().get("stats")));
 //get top posters
         response = client.prepareSearch("data").
@@ -192,4 +199,16 @@ public class ESHelper {
         return si;
     }
 
+    public List<TypeBean> getTypes() throws ExecutionException, InterruptedException {
+        List<TypeBean> types = new ArrayList<TypeBean>();
+        GetMappingsResponse res = client.admin().indices().getMappings(new GetMappingsRequest().indices("data")).get();
+        ImmutableOpenMap<String, MappingMetaData> mapping = res.mappings().get("data");
+        for (ObjectObjectCursor<String, MappingMetaData> c : mapping) {
+            TypeBean tb = new TypeBean();
+            tb.setType(c.key);
+            types.add(tb);
+        }
+
+        return types;
+    }
 }
