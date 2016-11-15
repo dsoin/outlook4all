@@ -1,4 +1,4 @@
-var app = angular.module("Outlook4All", ['ui.bootstrap','angular-loading-bar'],function($locationProvider)
+var app = angular.module("Outlook4All", ['ui.bootstrap','angular-loading-bar','ngStorage'],function($locationProvider)
 {
       $locationProvider.html5Mode({
       enabled: true,
@@ -11,27 +11,50 @@ app.config(['$compileProvider' , function ($compileProvider)
           $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|http):.*/);
     }]);
 
-app.factory('typesService', function($http) {
-  return {
-    getTypes: function() {
-      return $http.get('/types');  //1. this returns promise
+app.run(function($http,$localStorage,$rootScope) {
+    if ($localStorage.types) {
+        $rootScope.dataTypes = $localStorage.types;
+    } else {
+   $http.get('/types').success(function(data){
+        $rootScope.data = data;
+        $localStorage.types = data;
+   });
+   }
+    $rootScope.updateTypes=function(typeToUpdate) {
+        for (dtype in $localStorage.types) {
+            if ($localStorage.types[dtype].type == typeToUpdate)
+                $localStorage.types[dtype].enabled = !$localStorage.types[dtype].enabled;
+        }
     }
-  };
+
+    $rootScope.getTypesString=function() {
+        ret = "";
+        for (dtype in $localStorage.types) {
+            if ($localStorage.types[dtype].enabled)
+                ret += ':'+$localStorage.types[dtype].type;
+        }
+        return ret;
+    }
+
 });
 
-app.controller("LandingPageController", function($scope, $window,$http, $location,typesService) {
-typesService.getTypes().then(function(d) {
-    $scope.types = d.data;
-  });
+app.controller("LandingPageController", function($scope, $window,$http, $location, $localStorage) {
+$scope.types=$localStorage.types;
 
+$scope.clickType = function(typeClicked) {
+    $scope.updateTypes(typeClicked);
+    $scope.getStats();
+   }
 
 $scope.init = function () {
     // check if there is query in url
     // and fire search in case its value is not empty
 };
 
-$http.get('/stats').
- success(function(data, status, headers, config) {
+$scope.getStats = function() {
+    typesParam = $scope.getTypesString();
+    $http.get('/stats/'+typesParam).
+    success(function(data, status, headers, config) {
       $scope.topDiscussedEver = data["topDiscussedEver"];
       $scope.topPostersEver = data["topPostersEver"];
       $scope.recent = data["recent"];
@@ -45,12 +68,15 @@ $http.get('/stats').
     error(function(data, status, headers, config) {
       // log error
     });
+}
+
 $scope.search = function (query) {
     console.log(this.query);
     var q = encodeURIComponent(this.query);
     $window.location.href='/search.html?q='+q;
 };
 
+$scope.getStats();
 });
 
 app.controller("ConversationController", function($scope, $window,$http, $location) {

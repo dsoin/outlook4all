@@ -29,13 +29,14 @@ public class O4AResource extends ServerResource {
         typeBeans = (List<TypeBean>) getContext().getAttributes().get("types");
         query = getRequestAttributes().get("q") != null ? (String) getRequestAttributes().get("q") : "";
         searchTypes = getSearchTypes((String) getRequestAttributes().get("types"));
+        log.error("SearchTypes=" + searchTypes.length);
         try {
             query = URLDecoder.decode(query.replace("+", "%2B"), "UTF-8");
-            log.info(query);
+            //log.info(query);
         } catch (UnsupportedEncodingException e) {
             log.error(e);
         }
-        log.info(query);
+        //log.info(query);
     }
 
     private String[] getSearchTypes(String types) {

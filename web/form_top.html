@@ -12,7 +12,7 @@
 
     <table class="table-condensed table-hover">
         <tbody data-ng-repeat="entry in types" class="list-group">
-        <tr><td><span class="badge">{{entry.type}}</span>&nbsp;
+        <tr><td><span class="badge" data-ng-click="clickType(entry.type)">{{entry.type}}</span>&nbsp;
         </td>
 
         </tr>

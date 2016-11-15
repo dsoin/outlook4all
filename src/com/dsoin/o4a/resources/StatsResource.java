@@ -10,6 +10,6 @@ public class StatsResource extends O4AResource {
 
     @Get("json")
     public StatsBean getStats() {
-        return esHelper.getStats();
+        return esHelper.getStats(searchTypes);
     }
 }
