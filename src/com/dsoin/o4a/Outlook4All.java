@@ -79,7 +79,7 @@ public class Outlook4All {
         component.getDefaultHost().attach("/search/{q}/{from}/{types}", createApp(SearchResource.class, staticapp.getContext()));
         component.getDefaultHost().attach("/stats/{types}", createApp(StatsResource.class, staticapp.getContext()));
         component.getDefaultHost().attach("/types", createApp(TypesResource.class, staticapp.getContext()));
-        component.getDefaultHost().attach("/getconv/{q}", createApp(ConversationResource.class, staticapp.getContext()));
+        component.getDefaultHost().attach("/getconv/{q}/{types}", createApp(ConversationResource.class, staticapp.getContext()));
         component.getDefaultHost().attach("/download/{id}", createApp(DownloadResource.class, staticapp.getContext()));
 
         component.start();

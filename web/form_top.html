@@ -1,23 +1,20 @@
 <nav class="navbar navbar-default navbar-top" role="navigation">
 <div class="navbar-header">
     <a class="navbar-brand" href="/" target="_self"><img src="/o4a.jpg" title ="Outlook4All" style="max-height:40px; margin-top: -10px;"/></a>
-
 </div>
 <form novalidate name="searchForm" class="navbar-form navbar-center navbar-input-group" role="search">
     <div class="form-group">
         <input type="text" id="q" class="form-control" ng-model="query" size="100" placeholder="Search for..." autofocus auto-focus>
     </div>
     <button ng-click="search(query)" class="btn btn-primary">Search</button>
+    <div><table >
+    <tr><td data-ng-repeat="entry in types">
+        <button type="button"  class="btn btn-xs"
+                ng-class="{'btn-success':entry.enabled, 'btn-danger':!entry.enabled}"
+                data-ng-click="clickType(entry.type)">{{entry.type}}</button>&nbsp;
+    </td></tr>
+        </table>
+    </div>
  </form>
-
-    <table class="table-condensed table-hover">
-        <tbody data-ng-repeat="entry in types" class="list-group">
-        <tr><td><span class="badge" data-ng-click="clickType(entry.type)">{{entry.type}}</span>&nbsp;
-        </td>
-
-        </tr>
-        </tbody>
-    </table>
-
 </nav>
 

@@ -79,31 +79,34 @@ $scope.search = function (query) {
 $scope.getStats();
 });
 
-app.controller("ConversationController", function($scope, $window,$http, $location) {
+app.controller("ConversationController", function($scope, $window,$http, $location, $localStorage) {
+$scope.types=$localStorage.types;
 
-$scope.init = function () {
-    // check if there is query in url
-    // and fire search in case its value is not empty
-};
-
-$http.get('/getconv/'+escape($location.search().q)).
- success(function(data, status, headers, config) {
-
-    $scope.eventDetailsCollapseMap=[];
-      $scope.conversations = data;
+$scope.clickType = function(typeClicked) {
+    $scope.updateTypes(typeClicked);
+    $scope.getConv(typeClicked);
+   }
 
 
-
+$scope.getConv = function () {
+    typesParam = $scope.getTypesString();
+    $http.get('/getconv/'+escape($location.search().q)+'/'+typesParam).
+        success(function(data, status, headers, config) {
+        $scope.eventDetailsCollapseMap=[];
+        $scope.conversations = data;
     }).
     error(function(data, status, headers, config) {
       // log error
     });
+}
 $scope.search = function (query) {
     console.log(this.query);
     var q = encodeURIComponent(this.query);
 
     $window.location.href='/search.html?q='+q;
 };
+
+$scope.getConv();
 
 // clicking on single row - show email
   $scope.selectTableRow = function (index) {
@@ -120,18 +123,23 @@ $scope.search = function (query) {
 
 });
 
-app.controller("SearchController", function($scope, $window,$http, $location) {
+app.controller("SearchController", function($scope, $window,$http, $location, $localStorage) {
 
 $scope.init = function () {
     // check if there is query in url
     // and fire search in case its value is not empty
 
     // $scope.query=$location.search().q;
-
-      if ($location.search().q != undefined )
+     $scope.types=$localStorage.types;
+     if ($location.search().q != undefined )
              $scope.search($location.search().q);
 
 };
+
+$scope.clickType = function(typeClicked) {
+    $scope.updateTypes(typeClicked);
+    $scope.search($scope.query);
+   }
 
 $scope.search = function (query) {
     $scope.currentPage=1;
@@ -152,8 +160,9 @@ $scope.pageSearch = function (query) {
         }
 
 
+    typesParam = $scope.getTypesString();
 
-    $http.get('/search/'+$scope.query+'/'+this.fromPage*10).
+    $http.get('/search/'+$scope.query+'/'+this.fromPage*10+'/'+typesParam).
      success(function(data, status, headers, config) {
 
           $scope.took = data["took"];
