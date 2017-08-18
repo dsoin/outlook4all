@@ -76,7 +76,6 @@ public class ESHelper {
                 setQuery(QueryBuilders.matchPhrasePrefixQuery("topic.keyword", topic)).
                 addSort(SortBuilders.fieldSort("submit_time").order(SortOrder.DESC)).setSize(1000).
                 execute().actionGet();
-
         for (SearchHit hit : response.getHits().getHits()) {
             SearchBean sb = new SearchBean();
             sb.setBody((String) hit.getSource().get("body"));
@@ -100,10 +99,11 @@ public class ESHelper {
     private List<AttachmentBean> getAttachments(String emailID) {
         List<AttachmentBean> res = new ArrayList<>();
         SearchResponse response = client.prepareSearch("attachments").
-                setQuery(QueryBuilders.termQuery("data_id", emailID)).
+                setQuery(QueryBuilders.termQuery("email_id", emailID)).
                 addStoredField("filename").
                 addStoredField("size").
                 execute().actionGet();
+        log.error(response);
         for (SearchHit hit : response.getHits().getHits()) {
             AttachmentBean ab = new AttachmentBean();
             ab.setFilename((String) hit.getFields().get("filename").getValue());
