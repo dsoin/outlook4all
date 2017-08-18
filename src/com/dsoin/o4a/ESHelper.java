@@ -210,7 +210,8 @@ public class ESHelper {
         for (ObjectObjectCursor<String, MappingMetaData> c : mapping) {
             TypeBean tb = new TypeBean();
             tb.setType(c.key);
-            types.add(tb);
+            if (!"*".equals(c.key))
+                types.add(tb);
         }
 
         return types;
