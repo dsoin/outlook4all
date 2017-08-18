@@ -37,6 +37,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class ESHelper {
     private final static Logger log = LogManager.getLogger(ESHelper.class);
+    private final static String indexName = "data";
     private Client client;
 
 
@@ -46,7 +47,7 @@ public class ESHelper {
 
     public SearchResultsBean searchEmails(String query, int from, boolean phrase, String[] types) {
         SearchResultsBean sb = new SearchResultsBean();
-        SearchResponse response = client.prepareSearch("data").
+        SearchResponse response = client.prepareSearch(indexName).
                 setTypes(types).
                 setSearchType(SearchType.QUERY_THEN_FETCH).
                 setQuery(QueryBuilders.multiMatchQuery(query, "body", "topic").type(phrase ? MultiMatchQueryBuilder.Type.PHRASE_PREFIX : MultiMatchQueryBuilder.Type.BEST_FIELDS)).
@@ -78,7 +79,7 @@ public class ESHelper {
 
     public List<SearchBean> getConversation(String topic, String[] types) {
         List<SearchBean> convs = new ArrayList<>();
-        SearchResponse response = client.prepareSearch("data").
+        SearchResponse response = client.prepareSearch(indexName).
                 setTypes(types).
                 setSearchType(SearchType.QUERY_THEN_FETCH).
                 setQuery(QueryBuilders.matchPhrasePrefixQuery("topic.keyword", topic)).
@@ -147,18 +148,18 @@ public class ESHelper {
     public StatsBean getStats(String[] searchTypes) {
         StatsBean sb = new StatsBean();
 //get top discussed
-        SearchResponse response = client.prepareSearch("data").setTypes(searchTypes).setSize(0).
+        SearchResponse response = client.prepareSearch(indexName).setTypes(searchTypes).setSize(0).
                 addAggregation(AggregationBuilders.terms("stats").field("topic.keyword").size(20)).
                 execute().actionGet();
         sb.setTopDiscussedEver(pullAggsResult(response.getAggregations().get("stats")));
 //get top posters
-        response = client.prepareSearch("data").setTypes(searchTypes).
+        response = client.prepareSearch(indexName).setTypes(searchTypes).
                 addAggregation(AggregationBuilders.terms("stats").field("sender.keyword").size(20)).
                 execute().actionGet();
         sb.setTopPostersEver(pullAggsResult(response.getAggregations().get("stats")));
 
 // get recent
-        response = client.prepareSearch("data").setTypes(searchTypes).
+        response = client.prepareSearch(indexName).setTypes(searchTypes).
                 addAggregation(AggregationBuilders.
                         filter("filter1m",QueryBuilders.rangeQuery("submit_time").to("now").from("now-1y")).
                         subAggregation(AggregationBuilders.terms("stats").field("topic.keyword").size(40).order(Terms.Order.aggregation("ta", false)).
@@ -167,20 +168,20 @@ public class ESHelper {
         sb.setRecent(pullAggsResult(((Filter) response.
                 getAggregations().get("filter1m")).getAggregations().get("stats")));
 //get index stats
-        IndicesStatsResponse is = client.admin().indices().prepareStats("data", "attachments").setTypes(searchTypes).
+        IndicesStatsResponse is = client.admin().indices().prepareStats(indexName, "attachments").setTypes(searchTypes).
                 execute().actionGet();
-        sb.setEmailsCount(is.getIndex("data").getTotal().docs.getCount());
-        sb.setEmailsSize(is.getIndex("data").getTotal().getStore().sizeInBytes());
+        sb.setEmailsCount(is.getIndex(indexName).getTotal().docs.getCount());
+        sb.setEmailsSize(is.getIndex(indexName).getTotal().getStore().sizeInBytes());
         sb.setAttachmentsCount(is.getIndex("attachments").getTotal().docs.getCount());
         sb.setAttachmentsSize(is.getIndex("attachments").getTotal().getStore().sizeInBytes());
 
-        response = client.prepareSearch("data").setTypes(searchTypes).setSearchType(SearchType.QUERY_THEN_FETCH).setSize(10).
+        response = client.prepareSearch(indexName).setTypes(searchTypes).setSearchType(SearchType.QUERY_THEN_FETCH).setSize(10).
                 setQuery(QueryBuilders.matchAllQuery()).addSort(SortBuilders.fieldSort("submit_time").order(SortOrder.DESC)).
                 addStoredField("submit_time").
                 execute().actionGet();
         if (response.getHits().getTotalHits() > 0)
             sb.setLastPost((String) response.getHits().getHits()[0].getFields().get("submit_time").getValue());
-        response = client.prepareSearch("data").setTypes(searchTypes).setSearchType(SearchType.QUERY_THEN_FETCH).
+        response = client.prepareSearch(indexName).setTypes(searchTypes).setSearchType(SearchType.QUERY_THEN_FETCH).
                 setQuery(QueryBuilders.matchAllQuery()).addSort(SortBuilders.fieldSort("submit_time").order(SortOrder.ASC)).
                 addStoredField("submit_time").
                 execute().actionGet();
@@ -204,8 +205,8 @@ public class ESHelper {
 
     public List<TypeBean> getTypes() throws ExecutionException, InterruptedException {
         List<TypeBean> types = new ArrayList<TypeBean>();
-        GetMappingsResponse res = client.admin().indices().getMappings(new GetMappingsRequest().indices("data")).get();
-        ImmutableOpenMap<String, MappingMetaData> mapping = res.mappings().get("data");
+        GetMappingsResponse res = client.admin().indices().getMappings(new GetMappingsRequest().indices(indexName)).get();
+        ImmutableOpenMap<String, MappingMetaData> mapping = res.mappings().get(indexName);
         for (ObjectObjectCursor<String, MappingMetaData> c : mapping) {
             TypeBean tb = new TypeBean();
             tb.setType(c.key);
