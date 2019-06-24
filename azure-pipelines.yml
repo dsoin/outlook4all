@@ -14,7 +14,7 @@ steps:
   displayName: 'Run a one-line script'
 
 
-  - task: Security static source code analysis@88
+ - task: Security static source code analysis@88
     inputs:
       CheckmarxService: 'CxPrivateCloud'
       projectName: 'test_ado'
