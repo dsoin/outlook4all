@@ -12,11 +12,17 @@ pool:
 steps:
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
-- task: Security static source code analysis@88
-  inputs:
-    preset: 'Checkmarx Default'
-    incScan: true
+
 - script: |
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
+
+  - task: Security static source code analysis@88
+    inputs:
+      CheckmarxService: 'CxPrivateCloud'
+      projectName: 'test_ado'
+      preset: 'Checkmarx Default'
+      fullTeamName: 'EMEA'
+      incScan: true
+
