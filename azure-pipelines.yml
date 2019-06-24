@@ -13,12 +13,3 @@ steps:
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
 
-
- - task: Security static source code analysis@88
-    inputs:
-      CheckmarxService: 'CxPrivateCloud'
-      projectName: 'test_ado'
-      preset: 'Checkmarx Default'
-      fullTeamName: 'EMEA'
-      incScan: true
-
