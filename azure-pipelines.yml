@@ -18,5 +18,5 @@ steps:
     CheckmarxService: 'CxPrivateCloud'
     projectName: 'test_ado'
     preset: 'Checkmarx Default'
-    fullTeamName: 'EMEA'
+    fullTeamName: 'CxServer\SP\EMEA'
     incScan: true
