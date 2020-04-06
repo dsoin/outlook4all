@@ -1,5 +1,4 @@
 version: 2.1
-
 jobs:
   build-and-test:
     docker:
@@ -12,8 +11,7 @@ jobs:
       - run:
           command: python /src/CxScan.py
           name: Submit Scan
-
- workflows:
+workflows:
   main:
     jobs:
       - build-and-test
