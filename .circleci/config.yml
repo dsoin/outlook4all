@@ -11,9 +11,7 @@ jobs:
           command: python /src/CxScan.py
           name: Submit Scan
 
- 
-
-workflows:
+ workflows:
   main:
     jobs:
       - build-and-test
