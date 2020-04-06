@@ -1,1 +1,19 @@
-todo
+jobs:
+  build-and-test:
+    docker:
+      - image: docker.pkg.github.com/checkmarx-innovation/cxast-ci-helper/circelci:latest
+        auth:
+          username: dsoincx
+          password: $GITHUB_TOKEN
+    steps:
+      - checkout  
+      - run:
+          command: python /src/CxScan.py
+          name: Submit Scan
+
+ 
+
+workflows:
+  main:
+    jobs:
+      - build-and-test
