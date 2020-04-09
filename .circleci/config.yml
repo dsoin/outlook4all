@@ -9,7 +9,7 @@ jobs:
     steps:
       - checkout  
       - run:
-          command: python /src/CxScan.py
+          command: python /src/CxScan.py --async
           name: Submit Scan
 workflows:
   main:
