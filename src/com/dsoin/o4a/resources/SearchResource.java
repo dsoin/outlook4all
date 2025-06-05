@@ -14,10 +14,12 @@ public class SearchResource extends O4AResource {
     protected void doInit() throws ResourceException {
         super.doInit();
         String fromStr = (String) getRequestAttributes().get("from");
-        try {
-            from = Integer.parseInt(fromStr);
-        } catch (NumberFormatException ex) {
-            log.error(ex);
+        if (fromStr != null) {
+            try {
+                from = Integer.parseInt(fromStr);
+            } catch (NumberFormatException ex) {
+                log.error(ex);
+            }
         }
 
     }
