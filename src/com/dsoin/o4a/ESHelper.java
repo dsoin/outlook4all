@@ -15,6 +15,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
+import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -50,7 +51,7 @@ public class ESHelper {
                 addStoredField("has_attachment").
                 setFrom(from).
                 execute().actionGet();
-        sb.setTotalHits(response.getHits().getTotalHits());
+        sb.setTotalHits(response.getHits().getTotalHits().value);
         sb.setTook(response.getTook().getMillis());
         List<SearchBean> sbs = new ArrayList<>();
         for (SearchHit hit : response.getHits().getHits()) {
@@ -78,12 +79,13 @@ public class ESHelper {
                 execute().actionGet();
         for (SearchHit hit : response.getHits().getHits()) {
             SearchBean sb = new SearchBean();
-            sb.setBody((String) hit.getSource().get("body"));
-            sb.setBody_html((String) hit.getSource().get("body_html"));
-            sb.setSender((String) hit.getSource().get("sender"));
-            sb.setSubmit_time((String) hit.getSource().get("submit_time"));
-            sb.setTopic((String) hit.getSource().get("topic"));
-            if (hit.getSource().get("has_attachment") != null) {
+            var src = hit.getSourceAsMap();
+            sb.setBody((String) src.get("body"));
+            sb.setBody_html((String) src.get("body_html"));
+            sb.setSender((String) src.get("sender"));
+            sb.setSubmit_time((String) src.get("submit_time"));
+            sb.setTopic((String) src.get("topic"));
+            if (src.get("has_attachment") != null) {
                 sb.setAttachments(getAttachments(hit.getId()));
                 if (sb.getAttachments().size() > 0)
                     sb.setHasAttachment(true);
@@ -154,7 +156,7 @@ public class ESHelper {
         response = client.prepareSearch("data").
                 addAggregation(AggregationBuilders.
                         filter("filter1m",QueryBuilders.rangeQuery("submit_time").to("now").from("now-1y")).
-                        subAggregation(AggregationBuilders.terms("stats").field("topic.keyword").size(40).order(Terms.Order.aggregation("ta", false)).
+                        subAggregation(AggregationBuilders.terms("stats").field("topic.keyword").size(40).order(BucketOrder.aggregation("ta", false)).
                                 subAggregation(AggregationBuilders.avg("ta").field("submit_time"))))
                 .execute().actionGet();
         sb.setRecent(pullAggsResult(((Filter) response.

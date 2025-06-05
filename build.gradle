@@ -1,25 +1,29 @@
-apply plugin: 'java'
-apply plugin: 'application'
-mainClassName = "com.dsoin.o4a.Outlook4All"
+plugins {
+    id 'java'
+    id 'application'
+}
+
+application {
+    mainClass = 'com.dsoin.o4a.Outlook4All'
+}
 
 repositories {
     mavenCentral()
-    maven { url "http://maven.restlet.org" }
 }
 
 dependencies {
-    compile group:'org.restlet.jee', name:'org.restlet',version: '2.3.3'
-    compile "org.restlet.jee:org.restlet.ext.jackson:2.3.3"
-    compile group:'org.apache.httpcomponents',name:'httpclient',version:'4.5.2'
-    compile group:'commons-primitives',name:'commons-primitives',version:'1.0'
-    compile group:'org.apache.logging.log4j',name:'log4j-api',version:'2.7'
-    compile group:'org.apache.logging.log4j',name:'log4j-core',version:'2.7'
+    implementation 'io.github.xsavikx:org.restlet:2.4.4'
+    implementation 'io.github.xsavikx:org.restlet.ext.jackson:2.4.4'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    implementation 'commons-primitives:commons-primitives:1.0'
+    implementation 'org.apache.logging.log4j:log4j-api:2.22.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.22.1'
 
-    compile 'com.pff:java-libpst:0.8.1'
-    compile 'org.apache.tika:tika-core:1.13'
-    compile 'org.elasticsearch:elasticsearch:5.0.0'
-    compile group: 'org.elasticsearch.client', name: 'transport', version: '5.0.0'
-    }
+    implementation 'com.pff:java-libpst:0.9.3'
+    implementation 'org.apache.tika:tika-core:3.2.0'
+    implementation 'org.elasticsearch:elasticsearch:7.17.9'
+    implementation 'org.elasticsearch.client:transport:7.17.28'
+}
 
 sourceSets {
     main {
@@ -32,23 +36,14 @@ sourceSets {
     }
 }
 
-applicationDistribution.from("web") {
-    into "web"
-}
-applicationDistribution.from("o4a.properties") {
-    into ""
-
-}
-
-applicationDistribution.from("emails-template.json") {
-    into ""
-
-}
-applicationDistribution.from("attachments-template.json") {
-    into ""
-
-applicationDistribution.from("log4j.properties") {
-        into ""
+distributions {
+    main {
+        contents {
+            from('web') { into('web') }
+            from('o4a.properties')
+            from('emails-template.json')
+            from('attachments-template.json')
+            from('log4j.properties')
+        }
     }
-
 }

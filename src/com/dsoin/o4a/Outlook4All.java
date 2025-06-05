@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.restlet.Application;
 import org.restlet.Component;
@@ -22,8 +22,8 @@ import org.restlet.routing.Router;
 import java.io.File;
 import java.io.FileReader;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.Properties;
-import com.sun.net.ssl.internal.ssl.Provider;
 import java.security.Security;
 
 /**
@@ -46,7 +46,6 @@ public class Outlook4All {
 
 
     private static void initREST() throws Exception {
-        Security.addProvider(new Provider());
         //Specifying the Keystore details
         System.setProperty("javax.net.ssl.keyStore",props.getProperty("keystore"));
         System.setProperty("javax.net.ssl.keyStorePassword","dsoin!");
@@ -55,7 +54,7 @@ public class Outlook4All {
         // System.setProperty("javax.net.debug","all");
 
         Component component = new Component();
-        component.getServers().add(Protocol.HTTPS, new Integer(props.getProperty("bindport")));
+        component.getServers().add(Protocol.HTTPS, Integer.parseInt(props.getProperty("bindport")));
         component.getClients().add(Protocol.FILE);
         log.info(Reference.decode(new File("").toURI().toString() + File.separator + "web"));
 // Create an static contect app
@@ -70,8 +69,9 @@ public class Outlook4All {
         component.getDefaultHost().attach(staticapp);
         Client client = new PreBuiltTransportClient(Settings.EMPTY)
                 .addTransportAddress(
-                        new InetSocketTransportAddress(InetAddress.getByName(props.getProperty("eshost")),
-                                new Integer(props.getProperty("esport"))));
+                        new TransportAddress(
+                                new InetSocketAddress(InetAddress.getByName(props.getProperty("eshost")),
+                                        Integer.parseInt(props.getProperty("esport")))));
 
 
         staticapp.getContext().getAttributes().put("esclient", client);
