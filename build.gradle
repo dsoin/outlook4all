@@ -3,7 +3,9 @@ plugins {
     id 'application'
 }
 
-mainClassName = 'com.dsoin.o4a.Outlook4All'
+application {
+    mainClass = 'com.dsoin.o4a.Outlook4All'
+}
 
 repositories {
     mavenCentral()
