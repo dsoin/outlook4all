@@ -15,7 +15,7 @@ public class SearchResource extends O4AResource {
         super.doInit();
         String fromStr = (String) getRequestAttributes().get("from");
         try {
-            from = new Integer(fromStr);
+            from = Integer.parseInt(fromStr);
         } catch (NumberFormatException ex) {
             log.error(ex);
         }
